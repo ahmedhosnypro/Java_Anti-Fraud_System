@@ -1,0 +1,96 @@
+apply plugin: 'hyperskill'
+apply plugin: 'kotlin'
+
+subprojects {
+    apply plugin: 'application'
+    apply plugin: 'java'
+
+    def userJava = Integer.parseInt(JavaVersion.current().getMajorVersion())
+    def hsJava = Integer.parseInt(hs.java.version)
+    def testJava = Math.max(userJava, hsJava)
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(testJava)
+
+    compileJava {
+        javaCompiler = javaToolchains.compilerFor {
+            languageVersion = JavaLanguageVersion.of(userJava)
+        }
+    }
+
+    compileTestJava {
+        javaCompiler = javaToolchains.compilerFor {
+            languageVersion = JavaLanguageVersion.of(testJava)
+        }
+    }
+
+    repositories {
+        mavenCentral()
+        maven { url 'https://packages.jetbrains.team/maven/p/hyperskill-hs-test/maven' }
+		maven { url "https://jitpack.io" }
+    }
+
+    dependencies {
+        testImplementation 'com.github.hyperskill:hs-test:release-SNAPSHOT'
+    }
+
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
+    sourceSets {
+        main.java.srcDir 'src'
+        test.java.srcDir 'test'
+    }
+
+    test {
+        systemProperty "file.encoding", "utf-8"
+        outputs.upToDateWhen { false }
+    }
+
+    compileJava.options.encoding = 'utf-8'
+    tasks.withType(JavaCompile) {
+        options.encoding = 'utf-8'
+    }
+}
+
+project(':util') {
+    dependencies {
+        implementation 'com.github.hyperskill:hs-test:release-SNAPSHOT'
+    }
+}
+
+configure(subprojects.findAll {it.name != 'util'}) {
+    dependencies {
+        testImplementation project(':util').sourceSets.main.output
+        testImplementation project(':util').sourceSets.test.output
+    }
+}
+
+wrapper {
+    gradleVersion = hs.gradle.version
+}
+buildscript {
+    ext.kotlin_version = '1.9.0'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
