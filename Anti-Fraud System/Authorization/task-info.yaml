@@ -709,6 +709,427 @@ files:
         };
     }
   learner_created: false
+- name: src/antifraud/security/SecurityConfig.kt
+  visible: true
+  text: |-
+    package antifraud.security
+
+    import antifraud.service.SecurityUserDetailsService
+    import jakarta.servlet.http.HttpServletRequest
+    import jakarta.servlet.http.HttpServletResponse
+    import org.springframework.context.annotation.Bean
+    import org.springframework.context.annotation.Configuration
+    import org.springframework.security.authentication.dao.DaoAuthenticationProvider
+    import org.springframework.security.config.annotation.web.builders.HttpSecurity
+    import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+    import org.springframework.security.web.AuthenticationEntryPoint
+    import org.springframework.security.web.SecurityFilterChain
+    import org.springframework.stereotype.Component
+
+
+    @Configuration
+    open class SecurityConfig(
+        private val securityUserDetailsService: SecurityUserDetailsService,
+    ) {
+        @Bean
+        open fun passwordEncoder(): BCryptPasswordEncoder? {
+            return BCryptPasswordEncoder()
+        }
+
+        @Bean
+        open fun authenticationProvider(): DaoAuthenticationProvider {
+            return DaoAuthenticationProvider().apply {
+                setUserDetailsService(securityUserDetailsService)
+                setPasswordEncoder(passwordEncoder())
+            }
+        }
+
+        @Bean
+        open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+            return http.csrf().disable().headers().frameOptions().disable().and().authorizeHttpRequests { authorize ->
+                authorize.requestMatchers("/api/auth/user").permitAll()
+                authorize.requestMatchers("/actuator/shutdown").permitAll()
+                authorize.requestMatchers("/h2-console/**").permitAll()
+                authorize.anyRequest().authenticated()
+            }.httpBasic()
+                .authenticationEntryPoint { _: HttpServletRequest?, response: HttpServletResponse?, authException: org.springframework.security.core.AuthenticationException? ->
+                    response?.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException?.message)
+                }
+                .and().authenticationProvider(authenticationProvider()).build()
+        }
+    }
+  learner_created: true
+- name: src/antifraud/exception/ControllerExceptionHandler.kt
+  visible: true
+  text: |-
+    package antifraud.exception
+
+    import jakarta.validation.ConstraintViolationException
+    import jakarta.validation.ValidationException
+    import org.springframework.http.HttpStatus
+    import org.springframework.http.ResponseEntity
+    import org.springframework.http.converter.HttpMessageNotReadableException
+    import org.springframework.security.core.userdetails.UsernameNotFoundException
+    import org.springframework.web.bind.annotation.ControllerAdvice
+    import org.springframework.web.bind.annotation.ExceptionHandler
+    import org.springframework.web.bind.annotation.ResponseBody
+    import org.springframework.web.bind.annotation.ResponseStatus
+
+    /**
+     * This class handles exceptions thrown by the controllers
+     * @author Ahmed Hosny
+     * @version 1.0
+     * @since 2023-04-07
+     */
+    @ControllerAdvice
+    class ControllerExceptionHandler {
+        /**
+         * when trying to save an invalid item
+         *
+         * @return 400 (Bad Request)
+         */
+        @ResponseBody
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        @ExceptionHandler(ValidationException::class)
+        fun exceptionHandler(ignored: ValidationException?): ResponseEntity<Any> {
+            return ResponseEntity.badRequest().build()
+        }
+
+        /**
+         * when ConstraintViolationException is thrown
+         *
+         * @return 400 (Bad Request)
+         */
+        @ResponseBody
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        @ExceptionHandler(
+            ConstraintViolationException::class
+        )
+        fun exceptionHandler(ignored: ConstraintViolationException?): ResponseEntity<Any> {
+            return ResponseEntity.badRequest().build()
+        }
+
+        /**
+         * when a user tries to register with an existing username
+         *
+         * @return 409 (Conflict)
+         */
+        @ResponseBody
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        @ExceptionHandler(UsernameNotFoundException::class)
+        fun exceptionHandler(ignored: UsernameNotFoundException?): ResponseEntity<Any> {
+            return ResponseEntity.status(409).build()
+        }
+
+
+        /**
+         * JSON parse error
+         *
+         * @return 409 (Conflict)
+         */
+        @ResponseBody
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        @ExceptionHandler(HttpMessageNotReadableException::class)
+        fun exceptionHandler(ignored: HttpMessageNotReadableException?): ResponseEntity<Any> {
+            return ResponseEntity.badRequest().build()
+        }
+    }
+  learner_created: true
+- name: src/antifraud/security/SecurityUserDetails.kt
+  visible: true
+  text: |-
+    package antifraud.security
+
+    import antifraud.model.User
+    import org.springframework.security.core.GrantedAuthority
+    import org.springframework.security.core.userdetails.UserDetails
+
+    class SecurityUserDetails(
+        @Transient private var user: User
+    ) : UserDetails {
+        override fun getAuthorities(): MutableCollection<out GrantedAuthority> = mutableListOf()
+        override fun getPassword() = user.password
+
+        override fun getUsername() = user.username
+
+        override fun isAccountNonExpired() = true
+
+        override fun isAccountNonLocked() = true
+
+        override fun isCredentialsNonExpired() = true
+
+        override fun isEnabled() = true
+    }
+  learner_created: true
+- name: src/antifraud/user/model/Privilege.kt
+  visible: true
+  learner_created: true
+- name: src/antifraud/user/model/Role.kt
+  visible: true
+  learner_created: true
+- name: src/antifraud/user/repository/UserRepository.kt
+  visible: true
+  text: |-
+    package antifraud.repository
+
+    import antifraud.model.User
+    import org.springframework.data.jpa.repository.JpaRepository
+    import org.springframework.stereotype.Repository
+    import java.util.*
+
+    @Repository
+    interface UserRepository : JpaRepository<User, Long> {
+        fun findByUsername(username: String): Optional<User>
+        fun existsByUsername(username: String): Boolean
+    }
+  learner_created: true
+- name: src/antifraud/user/service/SecurityUserDetailsService.kt
+  visible: true
+  text: |-
+    package antifraud.service
+
+    import antifraud.model.User
+    import antifraud.repository.UserRepository
+    import antifraud.security.SecurityUserDetails
+    import org.springframework.security.core.userdetails.UserDetails
+    import org.springframework.security.core.userdetails.UserDetailsService
+    import org.springframework.security.core.userdetails.UsernameNotFoundException
+    import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+    import org.springframework.stereotype.Component
+
+    @Component
+    class SecurityUserDetailsService(
+        private val userRepository: UserRepository,
+    ) : UserDetailsService {
+        override fun loadUserByUsername(username: String): UserDetails {
+            userRepository.findByUsername(username).apply { if (isPresent) return SecurityUserDetails(get()) }
+            throw UsernameNotFoundException("User not found")
+        }
+
+        fun save(user: User): User {
+            user.password = BCryptPasswordEncoder().encode(user.password)
+            return userRepository.save(user)
+        }
+
+        fun existByUsername(username: String) = userRepository.existsByUsername(username)
+        fun listUsers(): MutableList<User> = userRepository.findAll()
+        fun deleteUser(username: String) =
+            userRepository.findByUsername(username).apply { if (isPresent) userRepository.delete(get()) }
+    }
+  learner_created: true
+- name: src/antifraud/user/SetupDataLoader.kt
+  visible: true
+  learner_created: true
+- name: src/antifraud/transaction/model/Transaction.kt
+  visible: true
+  text: |-
+    package antifraud.model
+
+    import antifraud.util.TransactionValidationState
+    import antifraud.util.TransactionValidationState.*
+    import com.fasterxml.jackson.annotation.JsonProperty
+
+    data class Transaction(
+        @JsonProperty("amount")var amount: Int,
+    ) {
+        companion object {
+            fun validate(transaction: Transaction): TransactionValidationState {
+                return when {
+                    transaction.amount < 1 -> INVALID
+                    transaction.amount in 1..200 -> ALLOWED
+                    transaction.amount in 201..1500 -> MANUAL_PROCESSING
+                    else -> PROHIBITED
+                }
+            }
+        }
+    }
+  learner_created: true
+- name: src/antifraud/user/dto/NewUserDto.kt
+  visible: true
+  text: |-
+    package antifraud.dto
+
+    import antifraud.model.User
+    import com.fasterxml.jackson.annotation.JsonProperty
+    import jakarta.validation.constraints.NotBlank
+    import jakarta.validation.constraints.NotEmpty
+    import jakarta.validation.constraints.Size
+    import org.modelmapper.ModelMapper
+    class NewUserDto(
+        @NotBlank @NotEmpty @Size(min = 8, max = 50) @JsonProperty("name") var name: String,
+        @NotBlank @NotEmpty @Size(min = 8, max = 50) @JsonProperty var username: String,
+        @NotBlank @NotEmpty @Size(min = 8, max = 50) @JsonProperty var password: String,
+    ) {
+        companion object {
+            fun toEntity(newUserDto: NewUserDto): User {
+                return ModelMapper().map(newUserDto, User::class.java)
+            }
+        }
+    }
+  learner_created: true
+- name: src/antifraud/user/dto/UserDto.kt
+  visible: true
+  text: |-
+    package antifraud.dto
+
+    import antifraud.model.User
+    import com.fasterxml.jackson.annotation.JsonProperty
+    import org.modelmapper.ModelMapper
+
+    class UserDto(
+        @JsonProperty var id: Long? = null,
+        @JsonProperty var name: String? = null,
+        @JsonProperty var username: String? = null,
+    ) {
+        companion object {
+            fun fromEntity(user: User): UserDto {
+                return ModelMapper().map(user, UserDto::class.java)
+            }
+        }
+    }
+  learner_created: true
+- name: src/antifraud/transaction/controller/TransactionController.kt
+  visible: true
+  text: |+
+    package antifraud.controller
+
+    import antifraud.model.Transaction
+    import org.springframework.http.ResponseEntity
+    import org.springframework.web.bind.annotation.PostMapping
+    import org.springframework.web.bind.annotation.RequestBody
+    import org.springframework.web.bind.annotation.RestController
+
+    @RestController
+    class TransactionController {
+        data class ValidationResult(val result: String)
+        @PostMapping("/api/antifraud/transaction")
+        fun validateTransaction(
+            @RequestBody transaction: Transaction): ResponseEntity<Any> {
+            if (transaction.amount < 1) {
+                return ResponseEntity.badRequest().body("amount must be greater than 0")
+            }
+            return ResponseEntity.ok(ValidationResult(Transaction.validate(transaction).toString()))
+        }
+    }
+
+  learner_created: true
+- name: src/antifraud/transaction/TransactionValidationState.kt
+  visible: true
+  text: |-
+    package antifraud.util
+
+    enum class TransactionValidationState { ALLOWED, PROHIBITED, MANUAL_PROCESSING, INVALID }
+  learner_created: true
+- name: src/antifraud/user/repository/RoleRepository.kt
+  visible: true
+  learner_created: true
+- name: src/antifraud/user/repository/PrivilegeRepository.kt
+  visible: true
+  learner_created: true
+- name: src/antifraud/user/service/UserService.kt
+  visible: true
+  learner_created: true
+- name: src/antifraud/user/service/RoleService.kt
+  visible: true
+  learner_created: true
+- name: src/antifraud/user/dto/LockUserDto.kt
+  visible: true
+  learner_created: true
+- name: src/antifraud/user/util/RoleSet.kt
+  visible: true
+  learner_created: true
+- name: src/antifraud/user/util/LockOperationSet.kt
+  visible: true
+  learner_created: true
+- name: src/resources/docker-compose.yml
+  visible: true
+  learner_created: true
+- name: src/antifraud/user/model/User.kt
+  visible: true
+  text: |
+    package antifraud.model
+
+    import jakarta.persistence.*
+
+    /**
+     * User entity
+     *
+     * @author Ahmed Hosny
+     * @version 1.0
+     * @since 2023-04-07
+     */
+    @Entity(name = "users")
+    class User(
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "id", nullable = false) var id: Long? = null,
+
+        @Column(name = "username") var username: String? = null,
+
+        @Column(name = "password") var password: String? = null,
+
+        @Column(name = "name") var name: String? = null,
+    )
+  learner_created: true
+- name: src/antifraud/user/controller/UserController.kt
+  visible: true
+  text: |-
+    package antifraud.controller
+
+    import antifraud.dto.NewUserDto
+    import antifraud.dto.UserDto
+    import antifraud.service.SecurityUserDetailsService
+    import org.springframework.http.ResponseEntity
+    import org.springframework.web.bind.annotation.DeleteMapping
+    import org.springframework.web.bind.annotation.GetMapping
+    import org.springframework.web.bind.annotation.PathVariable
+    import org.springframework.web.bind.annotation.PostMapping
+    import org.springframework.web.bind.annotation.RequestBody
+    import org.springframework.web.bind.annotation.RestController
+    import java.net.URI
+
+    @RestController
+    class UserController(
+        private val securityUserDetailsService: SecurityUserDetailsService
+    ) {
+        @PostMapping("/api/auth/user")
+        fun createUser(@RequestBody newUserDto: NewUserDto): ResponseEntity<Any> {
+            if (securityUserDetailsService.existByUsername(newUserDto.username)) {
+                return ResponseEntity.status(409).body("username already exists")
+            }
+            return ResponseEntity.created(URI.create("/api/auth/user"))
+                .body(UserDto.fromEntity(securityUserDetailsService.save(NewUserDto.toEntity(newUserDto))))
+        }
+
+        @GetMapping("/api/auth/list")
+        fun listUsers(): ResponseEntity<Any> {
+            return ResponseEntity.ok(
+                securityUserDetailsService.listUsers().map(UserDto::fromEntity)
+            )
+        }
+
+        @DeleteMapping("/api/auth/user/{username}")
+        fun deleteUser(@PathVariable username: String): ResponseEntity<Any> {
+            if (!securityUserDetailsService.existByUsername(username)) {
+                return ResponseEntity.notFound().build()
+            }
+            securityUserDetailsService.deleteUser(username).apply {
+                if (this.isPresent) {
+                    return ResponseEntity.ok(mapOf("username" to username, "status" to "Deleted successfully!"))
+                }
+            }
+
+            return ResponseEntity.internalServerError().build()
+        }
+    }
+  learner_created: true
+- name: hs_err_pid25956.log
+  visible: true
+  learner_created: true
+- name: replay_pid25956.log
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/18069#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Sun, 16 Jul 2023 20:52:45 UTC"
 record: -1

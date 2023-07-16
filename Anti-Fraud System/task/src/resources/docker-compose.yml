@@ -1,0 +1,23 @@
+services:
+  db:
+    container_name: fraud
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: fraud
+      POSTGRES_PASSWORD: fraud
+      PGDATA: /data/fraud
+    volumes:
+      - db:/data/fraud
+    ports:
+      - '5332:5432'
+    networks:
+      - db
+    restart: unless-stopped
+
+networks:
+  db:
+    driver: bridge
+
+volumes:
+  db:
+
