@@ -5,7 +5,7 @@ import antifraud.user.dto.NewUserDto
 import antifraud.user.dto.UserDto
 import antifraud.user.util.RoleSet
 import antifraud.user.service.RoleService
-import antifraud.user.service.UserService
+import antifraud.user.service.JpaUserService
 import antifraud.user.util.LockOperationSet
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -19,7 +19,7 @@ import java.net.URI
 
 @RestController
 class UserController(
-    private val userService: UserService,
+    private val jpaUserService: JpaUserService,
     private val roleService: RoleService,
 
     ) {
@@ -27,20 +27,20 @@ class UserController(
 
     @PostMapping("/api/auth/user")
     fun createUser(@RequestBody newUserDto: NewUserDto): ResponseEntity<Any> {
-        if (userService.count() == 0L) {
+        if (jpaUserService.count() == 0L) {
             return ResponseEntity.created(URI.create("/api/auth/user"))
-                .body(UserDto.fromEntity(userService.save(NewUserDto.toEntity(newUserDto).apply {
+                .body(UserDto.fromEntity(jpaUserService.save(NewUserDto.toEntity(newUserDto).apply {
                     this.roles = mutableSetOf(roleService.findByName("ADMINISTRATOR").get())
                     this.accountNonLocked = true
                     alreadySetup = true
                 })))
         }
 
-        if (userService.existByUsername(newUserDto.username)) {
+        if (jpaUserService.existByUsername(newUserDto.username)) {
             return ResponseEntity.status(409).body("username already exists")
         }
         return ResponseEntity.created(URI.create("/api/auth/user"))
-            .body(UserDto.fromEntity(userService.save(NewUserDto.toEntity(newUserDto).apply {
+            .body(UserDto.fromEntity(jpaUserService.save(NewUserDto.toEntity(newUserDto).apply {
                 this.roles = mutableSetOf(roleService.findByName("MERCHANT").get())
             })))
     }
@@ -48,26 +48,23 @@ class UserController(
     @GetMapping("/api/auth/list")
     fun listUsers(): ResponseEntity<Any> {
         return ResponseEntity.ok(
-            userService.listUsers().map(UserDto::fromEntity)
+            jpaUserService.listUsers().map(UserDto::fromEntity)
         )
     }
 
     @DeleteMapping("/api/auth/user/{username}")
     fun deleteUser(@PathVariable username: String): ResponseEntity<Any> {
-        if (!userService.existByUsername(username)) {
+        if (!jpaUserService.existByUsername(username)) {
             return ResponseEntity.notFound().build()
         }
-        userService.deleteUser(username).apply {
-            if (this.isPresent) {
-                val user = this.get()
-                if (user.roles?.contains(roleService.findByName("ADMINISTRATOR").get()) == true) {
-                    return ResponseEntity.status(403).body("Cannot delete administrator")
-                }
-                return ResponseEntity.ok(mapOf("username" to username, "status" to "Deleted successfully!"))
-            }
+
+        val user = jpaUserService.findByUsername(username) ?: return ResponseEntity.notFound().build()
+        if (user.roles?.contains(roleService.findByName("ADMINISTRATOR").get()) == true) {
+            return ResponseEntity.status(403).body("Cannot delete administrator")
         }
 
-        return ResponseEntity.internalServerError().build()
+        jpaUserService.deleteUser(username)
+        return ResponseEntity.ok(mapOf("username" to username, "status" to "Deleted successfully!"))
     }
 
     @PutMapping("/api/auth/role")
@@ -77,14 +74,14 @@ class UserController(
         }
 
         val role = userDto.role?.let { roleService.findByName(it).get() } ?: return ResponseEntity.badRequest().build()
-        val user = userService.findByUsername(userDto.username!!) ?: return ResponseEntity.notFound().build()
+        val user = jpaUserService.findByUsername(userDto.username!!) ?: return ResponseEntity.notFound().build()
 
 
         if (user.roles?.contains(role) == true) {
             return ResponseEntity.status(409).body("user already has this role")
         }
 
-        userService.setRole(user, role).apply {
+        jpaUserService.setRole(user, role).apply {
             UserDto.fromEntity(user).apply {
                 return ResponseEntity.ok(this)
             }
@@ -99,13 +96,13 @@ class UserController(
 
         val nonLocked = lockUserDto.operation?.let { LockOperationSet.valueOf(it).state }
             ?: return ResponseEntity.badRequest().build()
-        val user = userService.findByUsername(lockUserDto.username!!) ?: return ResponseEntity.notFound().build()
+        val user = jpaUserService.findByUsername(lockUserDto.username!!) ?: return ResponseEntity.notFound().build()
 
         if (user.accountNonLocked == nonLocked) {
             return ResponseEntity.status(409).body("user already has this status")
         }
 
-        userService.setAccess(user, nonLocked).apply {
+        jpaUserService.setAccess(user, nonLocked).apply {
             return ResponseEntity.ok(
                 mapOf("status" to "User ${user.username} ${if (user.accountNonLocked) "UNLOCKED" else "LOCKED"}!")
             )

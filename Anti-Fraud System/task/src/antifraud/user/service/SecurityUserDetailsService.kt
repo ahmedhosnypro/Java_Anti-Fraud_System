@@ -12,10 +12,10 @@ import java.util.stream.Collectors
 
 @Component
 class SecurityUserDetailsService(
-    private val userService: UserService,
+    private val jpaUserService: JpaUserService,
 ) : UserDetailsService {
     override fun loadUserByUsername(username: String): UserDetails {
-        val user = userService.findByUsername(username) ?: return org.springframework.security.core.userdetails.User(
+        val user = jpaUserService.findByUsername(username) ?: return org.springframework.security.core.userdetails.User(
             " ", " ", true, true, true, true, getAuthorities(listOf(Role(name = "ROLE_USER")))
         )
         return User(user.username,

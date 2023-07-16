@@ -1026,9 +1026,6 @@ files:
 - name: src/antifraud/user/repository/PrivilegeRepository.kt
   visible: true
   learner_created: true
-- name: src/antifraud/user/service/UserService.kt
-  visible: true
-  learner_created: true
 - name: src/antifraud/user/service/RoleService.kt
   visible: true
   learner_created: true
@@ -1121,15 +1118,15 @@ files:
         }
     }
   learner_created: true
-- name: hs_err_pid25956.log
+- name: src/antifraud/user/service/JpaUserService.kt
   visible: true
   learner_created: true
-- name: replay_pid25956.log
+- name: src/antifraud/user/service/UserService.kt
   visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/18069#comment
 status: Solved
 feedback:
   message: Congratulations!
-  time: "Sun, 16 Jul 2023 20:52:45 UTC"
+  time: "Sun, 16 Jul 2023 21:22:21 UTC"
 record: -1
