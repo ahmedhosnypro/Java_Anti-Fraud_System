@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: org.modelmapper:modelmapper:2.3.5" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.modelmapper" artifactId="modelmapper" version="2.3.5" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.modelmapper/modelmapper/2.3.5/fe5270dad6257d6defd8f6e965e802504d46d3b3/modelmapper-2.3.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.modelmapper/modelmapper/2.3.5/9e565eac0549a8e0dbf6d3866fef37da6fa54867/modelmapper-2.3.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
