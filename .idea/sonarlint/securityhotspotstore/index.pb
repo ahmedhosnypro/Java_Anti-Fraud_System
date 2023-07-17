@@ -89,8 +89,6 @@ u
 EAnti-Fraud System/Simple transaction validation/task-remote-info.yaml,d\1\d18f3135237ccaa2019a7e329174fca409dfdd29
 u
 EAnti-Fraud System/Stolen cards   suspicious IPs/task-remote-info.yaml,c\1\c18db0ded7bea733532b57f5c2d9008f06034b79
-n
->Anti-Fraud System/Stolen cards   suspicious IPs/task-info.yaml,4\c\4cf3e0aff87a17c9619a9891859a88b4ccd63b03
 e
 5Anti-Fraud System/Authorization/task-remote-info.yaml,6\f\6fec8e3879c3710a7e55ec4c06363e5288b6dbbd
 X
@@ -513,8 +511,6 @@ w
 G.idea/sonarlint/issuestore/e/3/e39a1d78e4d6012aedf7c519ccd5e2bb7e0a4dc0,c\5\c5e1c624c812d0d35cca24132c58abf6bfaac445
 w
 G.idea/sonarlint/issuestore/e/3/e3948024617c9782b5396dcb62551e15709661f9,3\0\309ed5f890b7362110a0a38df8d6e29fa98f2fdf
-|
-LAnti-Fraud System/task/src/antifraud/exception/ControllerExceptionHandler.kt,3\c\3cca808a4fcf549fe60842185cd4c5b2ff7c2ed0
 Å
 Q.idea/sonarlint/securityhotspotstore/6/4/64ad628bf998b59c6ffb6c844a093965b072a46e,0\7\07c22d105135b19a304d78e411f909c838769780
 Å
@@ -689,3 +685,45 @@ Q.idea/sonarlint/securityhotspotstore/d/2/d2e2e092c3075a6b0f383100bcc3bf55260679
 Q.idea/sonarlint/securityhotspotstore/c/6/c62cb92fc4bb6dbd862aebf83aa413febdff44cf,0\3\03a253584909c4e487e18fa62dbc248563cfe999
 Å
 Q.idea/sonarlint/securityhotspotstore/d/0/d0d70002761dab78eb5de713dffd36e5906fd0ed,3\1\31530b765932eb3d0550f7b6abe2c221fe55b862
+t
+DAnti-Fraud System/task/src/antifraud/security/SecurityUserDetails.kt,7\f\7f2fdf76bfbacfc3dadbcca354af9c205a580e18
+|
+LAnti-Fraud System/task/src/antifraud/antifraud/TransactionValidationState.kt,6\4\64dbd10f265417c8ceef7df06b729e4e16197a37
+Ü
+V.idea/modules/Anti-Fraud System/task/Anti-Fraud_System.Anti-Fraud_System-task.main.iml,c\e\cef355c5d481438da1fcb7c24ed976266e7222c8
+_
+/Anti-Fraud System/Authentication/task-info.yaml,1\0\10cdd0c37d462c810d558bc31874d46bdcf3756e
+v
+FAnti-Fraud System/task/src/antifraud/user/repository/RoleRepository.kt,9\d\9d48e3c382ea7e04b1d8cbde9ec366302789fd2b
+Ü
+V.idea/modules/Anti-Fraud System/task/Anti-Fraud_System.Anti-Fraud_System-task.test.iml,3\2\323e51bc06796a3362d3e444d5cd6925ff1565d8
+{
+KAnti-Fraud System/task/src/antifraud/user/repository/PrivilegeRepository.kt,c\1\c14b53131fc0c5bd8373945f5f04b68c405af00f
+r
+BAnti-Fraud System/task/src/antifraud/user/util/LockOperationSet.kt,c\e\ce996d2b83e5de16c9b51553ebebace39a4c38f4
+p
+@Anti-Fraud System/task/src/antifraud/user/service/RoleService.kt,5\3\53722aebd8325a7bc637d10eaf1c56dc97544a99
+i
+9Anti-Fraud System/task/src/antifraud/user/util/RoleSet.kt,a\2\a208225d3c4359e3fba58faf3fd2e7629f636d4d
+v
+FAnti-Fraud System/task/src/antifraud/user/repository/UserRepository.kt,9\6\96177eb975f27520f79bdb214ae27d91738a4476
+C
+hs_err_pid18360.log,7\b\7bb0fb0a8cc2a8749f75b96db762d982c68d1ba9
+
+OAnti-Fraud System/task/src/antifraud/user/service/SecurityUserDetailsService.kt,3\8\38e9573fc1a852d26f71bab143d45a7ad5519edb
+p
+@Anti-Fraud System/task/src/antifraud/user/service/UserService.kt,b\4\b42d22ae6990dbcbc32d09d6363921c1bb3b7068
+s
+CAnti-Fraud System/task/src/antifraud/user/service/JpaUserService.kt,3\3\33c107c21c59403e8dfcb111f6c85c03b16b6c12
+l
+<Anti-Fraud System/task/src/antifraud/user/dto/LockUserDto.kt,2\b\2b003248bf53fe88d8610abae4bb4f33096ba002
+|
+LAnti-Fraud System/task/src/antifraud/exception/ControllerExceptionHandler.kt,3\c\3cca808a4fcf549fe60842185cd4c5b2ff7c2ed0
+É
+SAnti-Fraud System/task/src/antifraud/antifraud/repository/SuspiciousIpRepository.kt,6\4\64dbaa909bdece517f2480785986c4a97e0fa92e
+Å
+QAnti-Fraud System/task/src/antifraud/antifraud/repository/StolenCardRepository.kt,4\7\4771568c752e970f5ecfba56582bf14966836442
+{
+KAnti-Fraud System/task/src/antifraud/antifraud/service/StolenCardService.kt,6\d\6d02fc689d82563585970e82046e06943385a26a
+}
+MAnti-Fraud System/task/src/antifraud/antifraud/service/SuspiciousIpService.kt,e\6\e69553001156f5297701c8669e09cd275162bc3b

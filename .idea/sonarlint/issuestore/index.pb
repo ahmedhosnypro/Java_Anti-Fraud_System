@@ -177,8 +177,6 @@ Y
 )Anti-Fraud System/Feedback/task-info.yaml,c\1\c1fc23aa18e7160d7d3d8f139eaca2c158779d18
 b
 2Anti-Fraud System/Rule-based system/task-info.yaml,0\2\0251f892ace57804d0674b713a57dac5f1826da4
-n
->Anti-Fraud System/Stolen cards   suspicious IPs/task-info.yaml,4\c\4cf3e0aff87a17c9619a9891859a88b4ccd63b03
 f
 6Anti-Fraud System/Authentication/task-remote-info.yaml,5\5\554f0a001fa012ef7bb20c6b9e670d77dd0c88ea
 e
@@ -681,11 +679,51 @@ r
 BAnti-Fraud System/task/build/reports/tests/test/css/base-style.css,e\1\e19ce9a8866c2643f2d01c1f5a73c67f6a634bad
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
-|
-LAnti-Fraud System/task/src/antifraud/exception/ControllerExceptionHandler.kt,3\c\3cca808a4fcf549fe60842185cd4c5b2ff7c2ed0
 l
 <Anti-Fraud System/task/build/reports/tests/test/js/report.js,a\c\ac92621d05b5e141b74455437663ed201eaf9fcc
 m
 =Anti-Fraud System/task/build/reports/tests/test/css/style.css,b\3\b3102ef1ea8e9a958a8aa90c2de54997befdca9c
 n
 >Anti-Fraud System/Simple transaction validation/task-info.yaml,0\d\0da38fabb2c6e101ab018f0e32f8183d5e4529e9
+†
+V.idea/modules/Anti-Fraud System/task/Anti-Fraud_System.Anti-Fraud_System-task.main.iml,c\e\cef355c5d481438da1fcb7c24ed976266e7222c8
+†
+V.idea/modules/Anti-Fraud System/task/Anti-Fraud_System.Anti-Fraud_System-task.test.iml,3\2\323e51bc06796a3362d3e444d5cd6925ff1565d8
+r
+BAnti-Fraud System/task/src/antifraud/user/util/LockOperationSet.kt,c\e\ce996d2b83e5de16c9b51553ebebace39a4c38f4
+{
+KAnti-Fraud System/task/src/antifraud/user/repository/PrivilegeRepository.kt,c\1\c14b53131fc0c5bd8373945f5f04b68c405af00f
+v
+FAnti-Fraud System/task/src/antifraud/user/repository/RoleRepository.kt,9\d\9d48e3c382ea7e04b1d8cbde9ec366302789fd2b
+p
+@Anti-Fraud System/task/src/antifraud/user/service/RoleService.kt,5\3\53722aebd8325a7bc637d10eaf1c56dc97544a99
+i
+9Anti-Fraud System/task/src/antifraud/user/util/RoleSet.kt,a\2\a208225d3c4359e3fba58faf3fd2e7629f636d4d
+t
+DAnti-Fraud System/task/src/antifraud/security/SecurityUserDetails.kt,7\f\7f2fdf76bfbacfc3dadbcca354af9c205a580e18
+_
+/Anti-Fraud System/Authentication/task-info.yaml,1\0\10cdd0c37d462c810d558bc31874d46bdcf3756e
+|
+LAnti-Fraud System/task/src/antifraud/antifraud/TransactionValidationState.kt,6\4\64dbd10f265417c8ceef7df06b729e4e16197a37
+C
+hs_err_pid18360.log,7\b\7bb0fb0a8cc2a8749f75b96db762d982c68d1ba9
+
+OAnti-Fraud System/task/src/antifraud/user/service/SecurityUserDetailsService.kt,3\8\38e9573fc1a852d26f71bab143d45a7ad5519edb
+v
+FAnti-Fraud System/task/src/antifraud/user/repository/UserRepository.kt,9\6\96177eb975f27520f79bdb214ae27d91738a4476
+p
+@Anti-Fraud System/task/src/antifraud/user/service/UserService.kt,b\4\b42d22ae6990dbcbc32d09d6363921c1bb3b7068
+s
+CAnti-Fraud System/task/src/antifraud/user/service/JpaUserService.kt,3\3\33c107c21c59403e8dfcb111f6c85c03b16b6c12
+l
+<Anti-Fraud System/task/src/antifraud/user/dto/LockUserDto.kt,2\b\2b003248bf53fe88d8610abae4bb4f33096ba002
+|
+LAnti-Fraud System/task/src/antifraud/exception/ControllerExceptionHandler.kt,3\c\3cca808a4fcf549fe60842185cd4c5b2ff7c2ed0
+ƒ
+SAnti-Fraud System/task/src/antifraud/antifraud/repository/SuspiciousIpRepository.kt,6\4\64dbaa909bdece517f2480785986c4a97e0fa92e
+
+QAnti-Fraud System/task/src/antifraud/antifraud/repository/StolenCardRepository.kt,4\7\4771568c752e970f5ecfba56582bf14966836442
+{
+KAnti-Fraud System/task/src/antifraud/antifraud/service/StolenCardService.kt,6\d\6d02fc689d82563585970e82046e06943385a26a
+}
+MAnti-Fraud System/task/src/antifraud/antifraud/service/SuspiciousIpService.kt,e\6\e69553001156f5297701c8669e09cd275162bc3b

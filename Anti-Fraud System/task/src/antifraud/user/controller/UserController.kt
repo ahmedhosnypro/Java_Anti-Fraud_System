@@ -1,8 +1,7 @@
 package antifraud.user.controller
 
 import antifraud.user.dto.LockUserDto
-import antifraud.user.dto.NewUserDto
-import antifraud.user.dto.UserDto
+import antifraud.user.dto.UserDTO
 import antifraud.user.util.RoleSet
 import antifraud.user.service.RoleService
 import antifraud.user.service.JpaUserService
@@ -26,21 +25,21 @@ class UserController(
     private var alreadySetup = false
 
     @PostMapping("/api/auth/user")
-    fun createUser(@RequestBody newUserDto: NewUserDto): ResponseEntity<Any> {
+    fun createUser(@RequestBody userDto: UserDTO): ResponseEntity<Any> {
         if (jpaUserService.count() == 0L) {
             return ResponseEntity.created(URI.create("/api/auth/user"))
-                .body(UserDto.fromEntity(jpaUserService.save(NewUserDto.toEntity(newUserDto).apply {
+                .body(UserDTO.fromEntity(jpaUserService.save(UserDTO.toEntity(userDto).apply {
                     this.roles = mutableSetOf(roleService.findByName("ADMINISTRATOR").get())
                     this.accountNonLocked = true
                     alreadySetup = true
                 })))
         }
 
-        if (jpaUserService.existByUsername(newUserDto.username)) {
+        if (userDto.username?.let { jpaUserService.existByUsername(it) } == true) {
             return ResponseEntity.status(409).body("username already exists")
         }
         return ResponseEntity.created(URI.create("/api/auth/user"))
-            .body(UserDto.fromEntity(jpaUserService.save(NewUserDto.toEntity(newUserDto).apply {
+            .body(UserDTO.fromEntity(jpaUserService.save(UserDTO.toEntity(userDto).apply {
                 this.roles = mutableSetOf(roleService.findByName("MERCHANT").get())
             })))
     }
@@ -48,7 +47,7 @@ class UserController(
     @GetMapping("/api/auth/list")
     fun listUsers(): ResponseEntity<Any> {
         return ResponseEntity.ok(
-            jpaUserService.listUsers().map(UserDto::fromEntity)
+            jpaUserService.listUsers().map(UserDTO::fromEntity)
         )
     }
 
@@ -68,13 +67,13 @@ class UserController(
     }
 
     @PutMapping("/api/auth/role")
-    fun setRole(@RequestBody userDto: UserDto): ResponseEntity<Any> {
-        if (userDto.username == null || userDto.role == null || userDto.role?.uppercase() !in RoleSet.entries.map { it.name }) {
+    fun setRole(@RequestBody userDto: UserDTO): ResponseEntity<Any> {
+        if (userDto.role == null || userDto.role?.uppercase() !in RoleSet.entries.map { it.name }) {
             return ResponseEntity.badRequest().build()
         }
 
         val role = userDto.role?.let { roleService.findByName(it).get() } ?: return ResponseEntity.badRequest().build()
-        val user = jpaUserService.findByUsername(userDto.username!!) ?: return ResponseEntity.notFound().build()
+        val user = userDto.username?.let { jpaUserService.findByUsername(it) } ?: return ResponseEntity.notFound().build()
 
 
         if (user.roles?.contains(role) == true) {
@@ -82,7 +81,7 @@ class UserController(
         }
 
         jpaUserService.setRole(user, role).apply {
-            UserDto.fromEntity(user).apply {
+            UserDTO.fromEntity(user).apply {
                 return ResponseEntity.ok(this)
             }
         }
