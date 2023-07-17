@@ -1,6 +1,6 @@
 package antifraud.security
 
-import antifraud.user.model.User
+import antifraud.model.User
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 

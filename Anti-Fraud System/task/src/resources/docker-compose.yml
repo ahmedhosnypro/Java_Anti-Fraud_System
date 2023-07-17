@@ -1,13 +1,13 @@
 services:
   db:
-    container_name: fraud
+    container_name: postgres-db
     image: postgres:latest
     environment:
-      POSTGRES_USER: fraud
-      POSTGRES_PASSWORD: fraud
-      PGDATA: /data/fraud
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
     volumes:
-      - db:/data/fraud
+      - db:/data/postgres
     ports:
       - '5332:5432'
     networks:

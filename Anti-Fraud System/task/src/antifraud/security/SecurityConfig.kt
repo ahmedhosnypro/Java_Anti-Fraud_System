@@ -1,6 +1,6 @@
 package antifraud.security
 
-import antifraud.user.service.SecurityUserDetailsService
+import antifraud.service.SecurityUserDetailsService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
@@ -30,11 +30,12 @@ open class SecurityConfig(
         return http.csrf().disable().headers().frameOptions().disable().and().authorizeHttpRequests { authorize ->
             authorize.requestMatchers("/api/auth/user").permitAll()
             authorize.requestMatchers("/api/auth/user/**").hasAuthority("ADMIN_PRIVILEGE")
-            authorize.requestMatchers("/api/auth/list/**").hasAuthority("LIST_USER_PRIVILEGE")
-            authorize.requestMatchers("api/antifraud/suspicious-ip/**").hasAuthority("SUSPICIOUS_IP_PRIVILEGE")
-            authorize.requestMatchers("api/antifraud/stolencard/**").hasAuthority("STOLEN_CARD_PRIVILEGE")
             authorize.requestMatchers("/api/auth/role/**").hasAuthority("ADMIN_PRIVILEGE")
             authorize.requestMatchers("/api/auth/access/**").hasAuthority("ADMIN_PRIVILEGE")
+            authorize.requestMatchers("/api/auth/list/**").hasAuthority("LIST_USER_PRIVILEGE")
+            authorize.requestMatchers("/api/antifraud/suspicious-ip").hasAuthority("SUSPICIOUS_IP_PRIVILEGE")
+            authorize.requestMatchers("/api/antifraud/suspicious-ip/**").hasAuthority("SUSPICIOUS_IP_PRIVILEGE")
+            authorize.requestMatchers("/api/antifraud/stolencard/**").hasAuthority("STOLEN_CARD_PRIVILEGE")
             authorize.requestMatchers("/api/antifraud/transaction/**").hasAuthority("CHECK_TRANSACTION_PRIVILEGE")
             authorize.requestMatchers("/actuator/shutdown").permitAll()
             authorize.requestMatchers("/h2-console/**").permitAll()
@@ -55,7 +56,6 @@ open class SecurityConfig(
         fun roleHierarchy(): RoleHierarchy {
             val roleHierarchy = RoleHierarchyImpl()
             val hierarchy = """
-                ROLE_ADMINISTRATOR > ROLE_SUPPORT
             """.trimIndent()
             roleHierarchy.setHierarchy(hierarchy)
             return roleHierarchy

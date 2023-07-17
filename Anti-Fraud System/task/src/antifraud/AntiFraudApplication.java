@@ -9,3 +9,4 @@ public class AntiFraudApplication {
         SpringApplication.run(AntiFraudApplication.class, args);
     }
 }
+
