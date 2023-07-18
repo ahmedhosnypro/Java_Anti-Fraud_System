@@ -3,11 +3,17 @@ package antifraud.controller
 import antifraud.dto.LockUserDto
 import antifraud.dto.NewUserDTO
 import antifraud.dto.UserDTO
+import antifraud.dto.UpdateUserRoleDTO
 import antifraud.util.RoleSet
 import antifraud.service.RoleService
 import antifraud.service.UserService
 import antifraud.util.LockOperationSet
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotEmpty
+import jakarta.validation.constraints.Size
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -18,15 +24,15 @@ import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
 @RestController
+@Validated
 class UserController(
     private val userService: UserService,
-    private val roleService: RoleService,
-
-    ) {
+    private val roleService: RoleService
+) {
     private var alreadySetup = false
 
     @PostMapping("/api/auth/user")
-    fun createUser(@RequestBody newUserDto: NewUserDTO): ResponseEntity<Any> {
+    fun createUser(@RequestBody @Valid newUserDto: NewUserDTO): ResponseEntity<Any> {
         if (userService.count() == 0L) {
             return ResponseEntity.created(URI.create("/api/auth/user"))
                 .body(UserDTO.fromEntity(userService.save(NewUserDTO.toEntity(newUserDto).apply {
@@ -36,7 +42,7 @@ class UserController(
                 })))
         }
 
-        if (userService.existByUsername(newUserDto.username)) {
+        if (userService.existByUsername(newUserDto.username) ) {
             return ResponseEntity.status(409).body("username already exists")
         }
         return ResponseEntity.created(URI.create("/api/auth/user"))
@@ -53,7 +59,7 @@ class UserController(
     }
 
     @DeleteMapping("/api/auth/user/{username}")
-    fun deleteUser(@PathVariable username: String): ResponseEntity<Any> {
+    fun deleteUser(@PathVariable @NotBlank @NotEmpty @Size(min = 3, max = 50) username: String): ResponseEntity<Any> {
         if (!userService.existByUsername(username)) {
             return ResponseEntity.notFound().build()
         }
@@ -68,15 +74,13 @@ class UserController(
     }
 
     @PutMapping("/api/auth/role")
-    fun setRole(@RequestBody userDto: UserDTO): ResponseEntity<Any> {
-        if (userDto.role == null || userDto.role?.uppercase() !in RoleSet.entries.map { it.name }) {
+    fun setRole(@RequestBody @Valid updateUserRoleDTO: UpdateUserRoleDTO): ResponseEntity<Any> {
+        if (updateUserRoleDTO.role == null || updateUserRoleDTO.role?.uppercase() !in RoleSet.entries.map { it.name }) {
             return ResponseEntity.badRequest().build()
         }
 
-        val role = userDto.role?.let { roleService.findByName(it).get() } ?: return ResponseEntity.badRequest().build()
-        val user =
-            userDto.username?.let { userService.findByUsername(it) } ?: return ResponseEntity.notFound().build()
-
+        val role = updateUserRoleDTO.role?.let { roleService.findByName(it).get() } ?: return ResponseEntity.badRequest().build()
+        val user = updateUserRoleDTO.username?.let { userService.findByUsername(it) } ?: return ResponseEntity.notFound().build()
 
         if (user.roles?.contains(role) == true) {
             return ResponseEntity.status(409).body("user already has this role")
@@ -90,7 +94,7 @@ class UserController(
     }
 
     @PutMapping("/api/auth/access")
-    fun enableUser(@RequestBody lockUserDto: LockUserDto): ResponseEntity<Any> {
+    fun enableUser(@RequestBody @Valid lockUserDto: LockUserDto): ResponseEntity<Any> {
         if (lockUserDto.username == null || lockUserDto.operation == null || lockUserDto.operation !in LockOperationSet.entries.map { it.name }) {
             return ResponseEntity.badRequest().build()
         }

@@ -1620,12 +1620,6 @@ files:
 - name: src/antifraud/util/LuhnAlgorithm.java
   visible: true
   learner_created: true
-- name: replay_pid14544.log
-  visible: true
-  learner_created: true
-- name: hs_err_pid14544.log
-  visible: true
-  learner_created: true
 - name: src/antifraud/service/UserService.kt
   visible: true
   text: |-
@@ -1813,5 +1807,5 @@ feedback_link: https://hyperskill.org/learn/step/18070#comment
 status: Solved
 feedback:
   message: Congratulations!
-  time: "Mon, 17 Jul 2023 15:41:06 UTC"
-record: -1
+  time: "Mon, 17 Jul 2023 15:56:19 UTC"
+record: 4

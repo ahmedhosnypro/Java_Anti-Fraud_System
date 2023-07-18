@@ -15,7 +15,7 @@ class SuspiciousIpController(
     private val ipService: IpService
 ) {
     @PostMapping("/api/antifraud/suspicious-ip")
-    fun blockIp(@Valid @RequestBody ipDTO: IpDTO): ResponseEntity<Any> {
+    fun blockIp(@RequestBody @Valid ipDTO: IpDTO): ResponseEntity<Any> {
         if (ipDTO.ip?.let { ipService.existsByIp(it) } == true) {
             return ResponseEntity.status(409).body("ip already exists")
         }
@@ -29,8 +29,7 @@ class SuspiciousIpController(
 
     @DeleteMapping("/api/antifraud/suspicious-ip/{ip}")
     fun unblockIp(
-        @Pattern(regexp = IpAddressUtil.IPV4_REGEX)
-        @PathVariable ip: String
+        @PathVariable @Pattern(regexp = IpAddressUtil.IPV4_REGEX)  ip: String
     ): ResponseEntity<Any> {
         val ipAddress = ipService.findByIp(ip) ?: return ResponseEntity.notFound().build()
 

@@ -68,7 +68,6 @@ dependencies {
     implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
     implementation 'org.eclipse.persistence:javax.persistence:2.2.1'
     implementation 'javax.validation:validation-api:2.0.1.Final'
-    implementation group: 'commons-validator', name: 'commons-validator', version: '1.7'
 }
 
 tasks.withType(KotlinCompile) {

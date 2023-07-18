@@ -1,29 +1,5 @@
 type: edu
 files:
-- name: src/antifraud/AntiFraudApplication.java
-  visible: true
-  text: |-
-    package antifraud;
-
-    import org.springframework.boot.SpringApplication;
-    import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-    @SpringBootApplication
-    public class AntiFraudApplication {
-        public static void main(String[] args) {
-            SpringApplication.run(AntiFraudApplication.class, args);
-        }
-    }
-  learner_created: false
-- name: src/resources/application.properties
-  visible: true
-  text: |-
-    server.port=28852
-    server.error.include-message=always
-    management.endpoints.web.exposure.include=*
-    management.endpoint.shutdown.enabled=true
-    spring.jackson.serialization.INDENT_OUTPUT=true
-  learner_created: false
 - name: build.gradle
   visible: true
   text: |-
@@ -48,6 +24,1244 @@ files:
         implementation group: 'org.hibernate', name: 'hibernate-validator', version: '6.1.0.Final'
     }
   learner_created: false
+- name: src/antifraud/repository/PrivilegeRepository.kt
+  visible: true
+  text: |-
+    package antifraud.repository
+
+    import antifraud.model.Privilege
+    import org.springframework.data.jpa.repository.JpaRepository
+    import org.springframework.stereotype.Repository
+    import java.util.Optional
+
+    @Repository
+    interface PrivilegeRepository : JpaRepository<Privilege, Long> {
+        fun findByName(name: String?): Optional<Privilege>
+    }
+  learner_created: true
+- name: src/antifraud/security/SecurityConfig.kt
+  visible: true
+  text: |-
+    package antifraud.security
+
+    import antifraud.service.SecurityUserDetailsService
+    import jakarta.servlet.http.HttpServletRequest
+    import jakarta.servlet.http.HttpServletResponse
+    import org.springframework.context.annotation.Bean
+    import org.springframework.context.annotation.Configuration
+    import org.springframework.security.access.hierarchicalroles.RoleHierarchy
+    import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl
+    import org.springframework.security.authentication.dao.DaoAuthenticationProvider
+    import org.springframework.security.config.annotation.web.builders.HttpSecurity
+    import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+    import org.springframework.security.web.SecurityFilterChain
+
+
+    @Configuration
+    open class SecurityConfig(
+        private val securityUserDetailsService: SecurityUserDetailsService,
+    ) {
+        @Bean
+        open fun authenticationProvider(): DaoAuthenticationProvider {
+            return DaoAuthenticationProvider().apply {
+                setUserDetailsService(securityUserDetailsService)
+                setPasswordEncoder(bCryptPasswordEncoder())
+            }
+        }
+
+        @Bean
+        open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+            return http.csrf().disable().headers().frameOptions().disable().and().authorizeHttpRequests { authorize ->
+                authorize.requestMatchers("/api/auth/user").permitAll()
+                authorize.requestMatchers("/api/auth/user/**").hasAuthority("ADMIN_PRIVILEGE")
+                authorize.requestMatchers("/api/auth/role/**").hasAuthority("ADMIN_PRIVILEGE")
+                authorize.requestMatchers("/api/auth/access/**").hasAuthority("ADMIN_PRIVILEGE")
+                authorize.requestMatchers("/api/auth/list/**").hasAuthority("LIST_USER_PRIVILEGE")
+                authorize.requestMatchers("/api/antifraud/suspicious-ip").hasAuthority("SUSPICIOUS_IP_PRIVILEGE")
+                authorize.requestMatchers("/api/antifraud/suspicious-ip/**").hasAuthority("SUSPICIOUS_IP_PRIVILEGE")
+                authorize.requestMatchers("/api/antifraud/stolencard/**").hasAuthority("STOLEN_CARD_PRIVILEGE")
+                authorize.requestMatchers("/api/antifraud/transaction/**").hasAuthority("CHECK_TRANSACTION_PRIVILEGE")
+                authorize.requestMatchers("/actuator/shutdown").permitAll()
+                authorize.requestMatchers("/h2-console/**").permitAll()
+                authorize.anyRequest().authenticated()
+            }.httpBasic()
+                .authenticationEntryPoint { _: HttpServletRequest?, response: HttpServletResponse?, authException: org.springframework.security.core.AuthenticationException? ->
+                    response?.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException?.message)
+                }.and().authenticationProvider(authenticationProvider()).build()
+        }
+
+        companion object {
+            @Bean
+            fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
+                return BCryptPasswordEncoder()
+            }
+
+            @Bean
+            fun roleHierarchy(): RoleHierarchy {
+                val roleHierarchy = RoleHierarchyImpl()
+                val hierarchy = """
+                """.trimIndent()
+                roleHierarchy.setHierarchy(hierarchy)
+                return roleHierarchy
+            }
+        }
+    }
+  learner_created: true
+- name: src/antifraud/model/Privilege.kt
+  visible: true
+  text: |-
+    package antifraud.model
+
+    import jakarta.persistence.*
+    import org.hibernate.annotations.CreationTimestamp
+    import org.hibernate.annotations.UpdateTimestamp
+    import java.sql.Timestamp
+
+
+    @Entity
+    class Privilege(
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null,
+        @Column(name = "name", nullable = false) var name: String? = null,
+
+        @ManyToMany(mappedBy = "privileges") var roles: MutableList<Role>? = null,
+
+        @CreationTimestamp @Temporal(TemporalType.TIMESTAMP)  @Column(name = "created_at", nullable = false) var createdAt: Timestamp? = null,
+        @UpdateTimestamp @Temporal(TemporalType.TIMESTAMP)   @Column(name = "updated_at", nullable = false) var updatedAt: Timestamp? = null,
+    )
+  learner_created: true
+- name: src/antifraud/service/SecurityUserDetailsService.kt
+  visible: true
+  text: |+
+    package antifraud.service
+
+    import antifraud.model.Privilege
+    import antifraud.model.Role
+    import org.springframework.security.core.GrantedAuthority
+    import org.springframework.security.core.authority.SimpleGrantedAuthority
+    import org.springframework.security.core.userdetails.User
+    import org.springframework.security.core.userdetails.UserDetails
+    import org.springframework.security.core.userdetails.UserDetailsService
+    import org.springframework.stereotype.Component
+    import java.util.stream.Collectors
+
+    @Component
+    class SecurityUserDetailsService(
+        private val userService: UserService,
+    ) : UserDetailsService {
+        override fun loadUserByUsername(username: String): UserDetails {
+            val user = userService.findByUsername(username) ?: return org.springframework.security.core.userdetails.User(
+                " ", " ", true, true, true, true, getAuthorities(listOf(Role(name = "ROLE_USER")))
+            )
+            return User(user.username,
+                user.password,
+                user.enabled,
+                user.accountNonExpired,
+                user.credentialsNonExpired,
+                user.accountNonLocked,
+                user.roles?.let { getAuthorities(it) }
+            )
+        }
+
+        private fun getAuthorities(roles: Collection<Role>): MutableList<GrantedAuthority> {
+            return getGrantedAuthorities(getPrivileges(roles))
+        }
+
+        private fun getPrivileges(roles: Collection<Role>): MutableList<String?> {
+            val privileges: MutableList<String?> = mutableListOf()
+            val collection: MutableList<Privilege> = mutableListOf()
+            for (role in roles) {
+                privileges.add(role.name)
+                role.privileges?.let { collection.addAll(it) }
+            }
+            for (item in collection) {
+                privileges.add(item.name)
+            }
+            return privileges
+        }
+
+        private fun getGrantedAuthorities(privileges: MutableList<String?>): MutableList<GrantedAuthority> {
+            return privileges.stream().map { privilege: String? -> SimpleGrantedAuthority(privilege) }
+                .collect(Collectors.toList())
+        }
+    }
+
+
+  learner_created: true
+- name: src/antifraud/dto/IpDTO.kt
+  visible: true
+  text: |-
+    package antifraud.dto
+
+    import antifraud.model.Ip
+    import antifraud.util.IpAddressUtil
+    import jakarta.validation.constraints.*
+    import org.modelmapper.ModelMapper
+
+    data class IpDTO(
+        var id: Long? = null,
+
+        @field:NotNull @field:NotBlank @field:NotEmpty
+        @field:Pattern(regexp =IpAddressUtil.IPV4_REGEX)
+        var ip: String? = null,
+    ) {
+        companion object {
+            fun fromEntity(ip: Ip): IpDTO =
+                ModelMapper().map(ip, IpDTO::class.java)
+
+            fun toEntity(ipDTO: IpDTO): Ip =
+                ModelMapper().map(ipDTO, Ip::class.java)
+        }
+    }
+  learner_created: true
+- name: src/antifraud/util/LockOperationSet.kt
+  visible: true
+  text: |-
+    package antifraud.util
+
+    enum class LockOperationSet(val state: Boolean) { LOCK(false), UNLOCK(true) }
+  learner_created: true
+- name: src/antifraud/service/CardService.kt
+  visible: true
+  text: |-
+    package antifraud.service
+
+    import antifraud.model.Card
+    import antifraud.repository.CardRepository
+    import org.springframework.stereotype.Service
+    import kotlin.jvm.optionals.getOrNull
+
+    @Service
+    class CardService(
+        private val cardRepository: CardRepository,
+    ) {
+        fun save(card: Card): Card = cardRepository.save(card)
+        fun findByNumber(number: String): Card? = cardRepository.findByNumber(number).getOrNull()
+        fun existByNumber(number: String): Boolean = cardRepository.existsByNumber(number)
+
+        fun delete(card: Card) = cardRepository.delete(card)
+        fun findAll(): MutableList<Card> = cardRepository.findAll()
+    }
+  learner_created: true
+- name: src/antifraud/dto/CardDTO.kt
+  visible: true
+  text: |-
+    package antifraud.dto
+
+    import antifraud.model.Card
+    import jakarta.validation.constraints.NotBlank
+    import jakarta.validation.constraints.NotEmpty
+    import jakarta.validation.constraints.NotNull
+    import jakarta.validation.constraints.Size
+    import org.modelmapper.ModelMapper
+
+
+    data class CardDTO(
+        var id: Long? = null,
+
+        @field:NotNull @field:NotBlank @field:NotEmpty @field:Size(min = 16, max = 16)
+        var number: String? = null,
+    ) {
+        companion object {
+            fun toEntity(cardDTO: CardDTO): Card =
+                ModelMapper().map(cardDTO, Card::class.java)
+
+            fun fromEntity(card: Card): CardDTO = ModelMapper().map(card, CardDTO::class.java)
+        }
+    }
+  learner_created: true
+- name: src/antifraud/controller/UserController.kt
+  visible: true
+  text: |-
+    package antifraud.controller
+
+    import antifraud.dto.LockUserDto
+    import antifraud.dto.NewUserDTO
+    import antifraud.dto.UserDTO
+    import antifraud.util.RoleSet
+    import antifraud.service.RoleService
+    import antifraud.service.UserService
+    import antifraud.util.LockOperationSet
+    import org.springframework.http.ResponseEntity
+    import org.springframework.web.bind.annotation.DeleteMapping
+    import org.springframework.web.bind.annotation.GetMapping
+    import org.springframework.web.bind.annotation.PathVariable
+    import org.springframework.web.bind.annotation.PostMapping
+    import org.springframework.web.bind.annotation.PutMapping
+    import org.springframework.web.bind.annotation.RequestBody
+    import org.springframework.web.bind.annotation.RestController
+    import java.net.URI
+
+    @RestController
+    class UserController(
+        private val userService: UserService,
+        private val roleService: RoleService,
+
+        ) {
+        private var alreadySetup = false
+
+        @PostMapping("/api/auth/user")
+        fun createUser(@RequestBody newUserDto: NewUserDTO): ResponseEntity<Any> {
+            if (userService.count() == 0L) {
+                return ResponseEntity.created(URI.create("/api/auth/user"))
+                    .body(UserDTO.fromEntity(userService.save(NewUserDTO.toEntity(newUserDto).apply {
+                        this.roles = mutableSetOf(roleService.findByName("ADMINISTRATOR").get())
+                        this.accountNonLocked = true
+                        alreadySetup = true
+                    })))
+            }
+
+            if (userService.existByUsername(newUserDto.username)) {
+                return ResponseEntity.status(409).body("username already exists")
+            }
+            return ResponseEntity.created(URI.create("/api/auth/user"))
+                .body(UserDTO.fromEntity(userService.save(NewUserDTO.toEntity(newUserDto).apply {
+                    this.roles = mutableSetOf(roleService.findByName("MERCHANT").get())
+                })))
+        }
+
+        @GetMapping("/api/auth/list")
+        fun listUsers(): ResponseEntity<Any> {
+            return ResponseEntity.ok(
+                userService.listUsers().map(UserDTO::fromEntity)
+            )
+        }
+
+        @DeleteMapping("/api/auth/user/{username}")
+        fun deleteUser(@PathVariable username: String): ResponseEntity<Any> {
+            if (!userService.existByUsername(username)) {
+                return ResponseEntity.notFound().build()
+            }
+
+            val user = userService.findByUsername(username) ?: return ResponseEntity.notFound().build()
+            if (user.roles?.contains(roleService.findByName("ADMINISTRATOR").get()) == true) {
+                return ResponseEntity.status(403).body("Cannot delete administrator")
+            }
+
+            userService.deleteUser(username)
+            return ResponseEntity.ok(mapOf("username" to username, "status" to "Deleted successfully!"))
+        }
+
+        @PutMapping("/api/auth/role")
+        fun setRole(@RequestBody userDto: UserDTO): ResponseEntity<Any> {
+            if (userDto.role == null || userDto.role?.uppercase() !in RoleSet.entries.map { it.name }) {
+                return ResponseEntity.badRequest().build()
+            }
+
+            val role = userDto.role?.let { roleService.findByName(it).get() } ?: return ResponseEntity.badRequest().build()
+            val user =
+                userDto.username?.let { userService.findByUsername(it) } ?: return ResponseEntity.notFound().build()
+
+
+            if (user.roles?.contains(role) == true) {
+                return ResponseEntity.status(409).body("user already has this role")
+            }
+
+            userService.setRole(user, role).apply {
+                UserDTO.fromEntity(user).apply {
+                    return ResponseEntity.ok(this)
+                }
+            }
+        }
+
+        @PutMapping("/api/auth/access")
+        fun enableUser(@RequestBody lockUserDto: LockUserDto): ResponseEntity<Any> {
+            if (lockUserDto.username == null || lockUserDto.operation == null || lockUserDto.operation !in LockOperationSet.entries.map { it.name }) {
+                return ResponseEntity.badRequest().build()
+            }
+
+            val nonLocked = lockUserDto.operation?.let { LockOperationSet.valueOf(it).state }
+                ?: return ResponseEntity.badRequest().build()
+            val user = userService.findByUsername(lockUserDto.username!!) ?: return ResponseEntity.notFound().build()
+
+            if (user.accountNonLocked == nonLocked) {
+                return ResponseEntity.status(409).body("user already has this status")
+            }
+
+            userService.setAccess(user, nonLocked).apply {
+                return ResponseEntity.ok(
+                    mapOf("status" to "User ${user.username} ${if (user.accountNonLocked) "UNLOCKED" else "LOCKED"}!")
+                )
+            }
+        }
+    }
+  learner_created: true
+- name: src/antifraud/util/IpAddressUtil.kt
+  visible: true
+  text: |-
+    package antifraud.util
+
+    import java.util.*
+
+    class IpAddressUtil {
+
+        companion object {
+            const val IPV4_REGEX =
+                "(\\d{1,2}|[01]\\d{2}|2[0-4]\\d|25[0-5])\\.(\\d{1,2}|[01]\\d{2}|2[0-4]\\d|25[0-5])\\.(\\d{1,2}|[01]\\d{2}|2[0-4]\\d|25[0-5])\\.(\\d{1,2}|[01]\\d{2}|2[0-4]\\d|25[0-5])"
+
+            private fun toNumeric(ip: String?): Long {
+                if (ip == null) {
+                    return 0
+                }
+                val sc: Scanner = Scanner(ip).useDelimiter("\\.")
+                val l: Long = ((sc.nextLong() shl 24) + (sc.nextLong() shl 16) + (sc.nextLong() shl 8) + sc.nextLong())
+                sc.close()
+                return l
+            }
+
+            var ipComparator: Comparator<String?> = Comparator { ip1, ip2 ->
+                toNumeric(ip1).compareTo(toNumeric(ip2))
+            }
+        }
+    }
+  learner_created: true
+- name: src/antifraud/repository/IpRepository.kt
+  visible: true
+  text: |-
+    package antifraud.repository
+
+    import antifraud.model.Ip
+    import org.springframework.data.jpa.repository.JpaRepository
+    import org.springframework.stereotype.Repository
+    import java.util.Optional
+
+    @Repository
+    interface IpRepository : JpaRepository<Ip, Long> {
+        fun findByIp(ip: String): Optional<Ip>
+        fun existsByIp(ip: String): Boolean
+    }
+  learner_created: true
+- name: src/antifraud/service/RoleService.kt
+  visible: true
+  text: |-
+    package antifraud.service
+
+    import antifraud.repository.RoleRepository
+    import org.springframework.stereotype.Service
+
+    @Service
+    class RoleService(
+        private val roleRepository: RoleRepository
+    ) {
+        fun findByName(name: String) = roleRepository.findByName(name)
+
+    }
+  learner_created: true
+- name: src/antifraud/model/User.kt
+  visible: true
+  text: |+
+    package antifraud.model
+
+    import jakarta.persistence.*
+
+    /**
+     * User entity
+     *
+     * @author Ahmed Hosny
+     * @version 1.0
+     * @since 2023-04-07
+     */
+    @Entity(name = "users")
+    class User(
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "id", nullable = false) var id: Long? = null,
+        @Column(name = "username", nullable = false) var username: String? = null,
+        @Column(name = "password", nullable = false) var password: String? = null,
+        @Column(name = "name", nullable = false) var name: String? = null,
+        @Column(name = "enabled", nullable = false) var enabled: Boolean = true,
+        @Column(name = "accountNonExpired", nullable = false) var accountNonExpired: Boolean = true,
+        @Column(name = "accountNonLocked", nullable = false) var accountNonLocked: Boolean = false,
+        @Column(name = "credentialsNonExpired", nullable = false) var credentialsNonExpired: Boolean = true,
+
+
+        @ManyToMany(fetch = FetchType.EAGER) @JoinTable(
+            name = "users_roles",
+            joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
+            inverseJoinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")],
+        ) var roles: MutableSet<Role>? = null,
+
+        //todo solve issue of timestamp with transactional annotation methods
+    //    @CreationTimestamp @Temporal(TemporalType.TIMESTAMP)  @Column(name = "created_at", nullable = false) var createdAt: Timestamp? = null,
+    //    @UpdateTimestamp @Temporal(TemporalType.TIMESTAMP)   @Column(name = "updated_at", nullable = false) var updatedAt: Timestamp? = null,
+    )
+
+  learner_created: true
+- name: src/antifraud/controller/StolenCardController.kt
+  visible: true
+  text: |-
+    package antifraud.controller
+
+    import antifraud.dto.CardDTO
+    import antifraud.service.CardService
+    import antifraud.util.CardNumberValidator
+    import jakarta.validation.constraints.NotBlank
+    import jakarta.validation.constraints.NotEmpty
+    import jakarta.validation.constraints.NotNull
+    import jakarta.validation.constraints.Size
+    import org.springframework.http.ResponseEntity
+    import org.springframework.web.bind.annotation.DeleteMapping
+    import org.springframework.web.bind.annotation.GetMapping
+    import org.springframework.web.bind.annotation.PathVariable
+    import org.springframework.web.bind.annotation.PostMapping
+    import org.springframework.web.bind.annotation.RequestBody
+    import org.springframework.web.bind.annotation.RestController
+
+    @RestController
+    class StolenCardController(
+        private val cardService: CardService,
+    ) {
+        @PostMapping("/api/antifraud/stolencard")
+        fun addStolenCard(@RequestBody cardDTO: CardDTO): ResponseEntity<Any> {
+            if (cardDTO.number?.let { CardNumberValidator.isValid(it) } == false) {
+                return ResponseEntity.badRequest().body("invalid card number")
+            }
+
+            if (cardDTO.number?.let { cardService.existByNumber(it) } == true) {
+                return ResponseEntity.status(409).body("card already exists")
+            }
+
+            return ResponseEntity.ok(
+                CardDTO.fromEntity(cardService.save(CardDTO.toEntity(cardDTO)))
+            )
+        }
+
+        @GetMapping("/api/antifraud/stolencard")
+        fun listStolenCards(): ResponseEntity<Any> =
+            ResponseEntity.ok(cardService.findAll().sortedBy { it.id }.map { CardDTO.fromEntity(it) })
+
+
+        @DeleteMapping("/api/antifraud/stolencard/{number}")
+        fun deleteCard(
+            @NotNull @NotBlank @NotEmpty @Size(min = 16, max = 16) @PathVariable number: String
+        ): ResponseEntity<Any> {
+            if (!CardNumberValidator.isValid(number)) {
+                return ResponseEntity.badRequest().body("invalid card number")
+            }
+
+            val card = cardService.findByNumber(number)
+            if (card != null) {
+                cardService.delete(card)
+                return ResponseEntity.ok().body(
+                    mapOf("status" to "Card ${card.number} successfully removed!")
+                )
+            }
+
+            return ResponseEntity.notFound().build()
+        }
+    }
+  learner_created: true
+- name: src/antifraud/exception/ControllerExceptionHandler.kt
+  visible: true
+  text: |-
+    package antifraud.exception
+
+    import jakarta.validation.ConstraintViolationException
+    import jakarta.validation.ValidationException
+    import org.springframework.http.HttpStatus
+    import org.springframework.http.ResponseEntity
+    import org.springframework.http.converter.HttpMessageNotReadableException
+    import org.springframework.security.core.userdetails.UsernameNotFoundException
+    import org.springframework.web.bind.annotation.ControllerAdvice
+    import org.springframework.web.bind.annotation.ExceptionHandler
+    import org.springframework.web.bind.annotation.ResponseBody
+    import org.springframework.web.bind.annotation.ResponseStatus
+
+    /**
+     * This class handles exceptions thrown by the controllers
+     * @author Ahmed Hosny
+     * @version 1.0
+     * @since 2023-04-07
+     */
+    @ControllerAdvice
+    class ControllerExceptionHandler {
+        /**
+         * when trying to save an invalid item
+         *
+         * @return 400 (Bad Request)
+         */
+        @ResponseBody
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        @ExceptionHandler(ValidationException::class)
+        fun exceptionHandler(ignored: ValidationException?): ResponseEntity<Any> {
+            return ResponseEntity.badRequest().build()
+        }
+
+        /**
+         * when ConstraintViolationException is thrown
+         *
+         * @return 400 (Bad Request)
+         */
+        @ResponseBody
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        @ExceptionHandler(
+            ConstraintViolationException::class
+        )
+        fun exceptionHandler(ignored: ConstraintViolationException?): ResponseEntity<Any> {
+            return ResponseEntity.badRequest().build()
+        }
+
+        /**
+         * when a user tries to register with an existing username
+         *
+         * @return 409 (Conflict)
+         */
+        @ResponseBody
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        @ExceptionHandler(UsernameNotFoundException::class)
+        fun exceptionHandler(ignored: UsernameNotFoundException?): ResponseEntity<Any> {
+            return ResponseEntity.status(409).build()
+        }
+
+
+        /**
+         * JSON parse error
+         *
+         * @return 409 (Conflict)
+         */
+        @ResponseBody
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        @ExceptionHandler(HttpMessageNotReadableException::class)
+        fun exceptionHandler(ignored: HttpMessageNotReadableException?): ResponseEntity<Any> {
+            return ResponseEntity.badRequest().build()
+        }
+    }
+  learner_created: true
+- name: src/antifraud/util/RoleSet.kt
+  visible: true
+  text: |-
+    package antifraud.util
+
+    enum class RoleSet {
+        MERCHANT,SUPPORT
+    }
+  learner_created: true
+- name: src/antifraud/service/UserService.kt
+  visible: true
+  text: |-
+    package antifraud.service
+
+    import antifraud.security.SecurityConfig
+    import antifraud.model.Role
+    import antifraud.model.User
+    import antifraud.repository.UserRepository
+    import org.springframework.stereotype.Service
+    import org.springframework.transaction.annotation.Transactional
+    import kotlin.jvm.optionals.getOrNull
+
+    @Service
+    @Transactional
+    class UserService(
+        private val userRepository: UserRepository,
+    )  {
+         fun save(user: User): User {
+            user.password = SecurityConfig.bCryptPasswordEncoder().encode(user.password)
+            return userRepository.save(user)
+        }
+
+         fun existByUsername(username: String) = userRepository.existsByUsername(username)
+         fun listUsers(): MutableList<User> = userRepository.findAll()
+
+        @Transactional
+         fun deleteUser(username: String): Unit? =
+            findByUsername(username)?.let { userRepository.delete(it) }
+
+         fun count() = userRepository.count()
+
+        @Transactional
+         fun setRole(user: User, role: Role) {
+            if (user.roles.isNullOrEmpty()) {
+                user.roles = mutableSetOf()
+            }
+            user.roles = mutableSetOf(role)
+            userRepository.save(user)
+        }
+
+        @Transactional
+         fun setAccess(user: User, nonLocked: Boolean) {
+            user.accountNonLocked = nonLocked
+            userRepository.save(user)
+        }
+
+         fun findByUsername(username: String) = userRepository.findByUsername(username).getOrNull()
+    }
+  learner_created: true
+- name: src/antifraud/repository/UserRepository.kt
+  visible: true
+  text: |-
+    package antifraud.repository
+
+    import antifraud.model.User
+    import jakarta.transaction.Transactional
+    import org.springframework.data.jpa.repository.JpaRepository
+    import org.springframework.stereotype.Repository
+    import java.util.*
+
+    @Repository
+    @Transactional(Transactional.TxType.MANDATORY)
+    interface UserRepository : JpaRepository<User, Long> {
+        fun findByUsername(username: String): Optional<User>
+        fun existsByUsername(username: String): Boolean
+    }
+  learner_created: true
+- name: src/antifraud/model/Role.kt
+  visible: true
+  text: |-
+    package antifraud.model
+
+    import jakarta.persistence.*
+    import org.hibernate.annotations.CreationTimestamp
+    import org.hibernate.annotations.UpdateTimestamp
+    import java.sql.Timestamp
+
+
+    @Entity
+    class Role(
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null,
+
+        var name: String? = null,
+
+        @ManyToMany(mappedBy = "roles") val users: Collection<User>? = null,
+
+        @ManyToMany(fetch = FetchType.EAGER) @JoinTable(
+            name = "roles_privileges",
+            joinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")],
+            inverseJoinColumns = [JoinColumn(name = "privilege_id", referencedColumnName = "id")]
+        ) var privileges: MutableSet<Privilege>? = null,
+
+        @CreationTimestamp @Temporal(TemporalType.TIMESTAMP)  @Column(name = "created_at", nullable = false) var createdAt: Timestamp? = null,
+        @UpdateTimestamp @Temporal(TemporalType.TIMESTAMP)   @Column(name = "updated_at", nullable = false) var updatedAt: Timestamp? = null,
+    )
+  learner_created: true
+- name: src/antifraud/util/LuhnAlgorithm.java
+  visible: true
+  text: |
+    package antifraud.util;
+
+    import java.util.ArrayList;
+
+    public class LuhnAlgorithm {
+        private LuhnAlgorithm() {
+        }
+
+        private static final int CARD_NUMBER_LENGTH = 16;
+        private static final int UTF_ZERO = 48;
+
+        private static final int LUHN_MODULUS = 10;
+        private static final int LUHN_MULTIPLY = 2;
+        private static final int LUHN_SUBTRACTION = 9;
+        private static final int LUHN_LIMIT = 9;
+
+        static int createCardCheckSum(String cardNumBuilder) {
+            int sum = sumLuhnDigits(cardNumBuilder);
+            return sum % LUHN_MODULUS == 0 ? 0 : LUHN_MODULUS - sum % LUHN_MODULUS;
+        }
+
+        static boolean checksum(String inputCardNum) {
+            int checksum = inputCardNum.charAt(inputCardNum.length() - 1) - UTF_ZERO;
+            if (checksum == 0) {
+                return checksum == sumLuhnDigits(inputCardNum) % 10;
+            } else {
+                return checksum == 10 - sumLuhnDigits(inputCardNum) % 10;
+            }
+        }
+
+        private static int sumLuhnDigits(String cardNUm) {
+            ArrayList<Integer> digits = new ArrayList<>();
+            int i = 0;
+            while (i < CARD_NUMBER_LENGTH - 1) {
+                digits.add(cardNUm.charAt(i) - UTF_ZERO);
+                i++;
+            }
+
+            for (int j = 0; j < digits.size(); j += 2) {
+                int multi2Sub9 = digits.get(j) * LUHN_MULTIPLY <= LUHN_LIMIT ? digits.get(j) * LUHN_MULTIPLY : digits.get(j) * LUHN_MULTIPLY - LUHN_SUBTRACTION;
+                digits.set(j, multi2Sub9);
+            }
+            return digits.stream().mapToInt(d -> d).sum();
+        }
+    }
+  learner_created: true
+- name: src/antifraud/controller/SuspiciousIpController.kt
+  visible: true
+  text: |-
+    package antifraud.controller
+
+    import antifraud.dto.IpDTO
+    import antifraud.service.IpService
+    import antifraud.util.IpAddressUtil
+    import jakarta.validation.Valid
+    import jakarta.validation.constraints.Pattern
+    import org.springframework.http.ResponseEntity
+    import org.springframework.validation.annotation.Validated
+    import org.springframework.web.bind.annotation.*
+
+    @RestController
+    @Validated
+    class SuspiciousIpController(
+        private val ipService: IpService
+    ) {
+        @PostMapping("/api/antifraud/suspicious-ip")
+        fun blockIp(@Valid @RequestBody ipDTO: IpDTO): ResponseEntity<Any> {
+            if (ipDTO.ip?.let { ipService.existsByIp(it) } == true) {
+                return ResponseEntity.status(409).body("ip already exists")
+            }
+
+            return ResponseEntity.ok().body(
+                IpDTO.fromEntity(
+                    ipService.save(IpDTO.toEntity(ipDTO).apply { blocked = true })
+                )
+            )
+        }
+
+        @DeleteMapping("/api/antifraud/suspicious-ip/{ip}")
+        fun unblockIp(
+            @Pattern(regexp = IpAddressUtil.IPV4_REGEX)
+            @PathVariable ip: String
+        ): ResponseEntity<Any> {
+            val ipAddress = ipService.findByIp(ip) ?: return ResponseEntity.notFound().build()
+
+            ipService.delete(ipAddress).apply {
+                return ResponseEntity.ok(mapOf("status" to "IP ${ipAddress.ip} successfully removed!"))
+            }
+        }
+
+        @GetMapping("/api/antifraud/suspicious-ip")
+        fun listBlockedIpAddresses(): ResponseEntity<Any> =
+            ResponseEntity.ok(ipService.findAll().sortedBy { it.id }.map { IpDTO.fromEntity(it) })
+    }
+  learner_created: true
+- name: src/antifraud/security/SecurityUserDetails.kt
+  visible: true
+  text: |-
+    package antifraud.security
+
+    import antifraud.model.User
+    import org.springframework.security.core.GrantedAuthority
+    import org.springframework.security.core.userdetails.UserDetails
+
+    class SecurityUserDetails(
+        @Transient private var user: User
+    ) : UserDetails {
+        override fun getAuthorities(): MutableCollection<out GrantedAuthority> = mutableListOf()
+        override fun getPassword() = user.password
+
+        override fun getUsername() = user.username
+
+        override fun isAccountNonExpired() = true
+
+        override fun isAccountNonLocked() = true
+
+        override fun isCredentialsNonExpired() = true
+
+        override fun isEnabled() = true
+    }
+  learner_created: true
+- name: src/antifraud/model/Card.kt
+  visible: true
+  text: |-
+    package antifraud.model
+
+    import jakarta.persistence.*
+
+    @Entity
+    class Card(
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "id", nullable = false) var id: Long? = null,
+        @Column(name = "number", nullable = false) var number: String? = null,
+    )
+  learner_created: true
+- name: src/antifraud/util/SetupDataLoader.kt
+  visible: true
+  text: |-
+    package antifraud.util
+
+    import antifraud.model.Privilege
+    import antifraud.model.Role
+    import antifraud.repository.PrivilegeRepository
+    import antifraud.repository.RoleRepository
+    import org.springframework.context.ApplicationListener
+    import org.springframework.context.event.ContextRefreshedEvent
+    import org.springframework.stereotype.Component
+    import org.springframework.transaction.annotation.Transactional
+
+
+    @Component
+    open class SetupDataLoader(
+        private val roleRepository: RoleRepository,
+        private val privilegeRepository: PrivilegeRepository,
+    ) : ApplicationListener<ContextRefreshedEvent> {
+        private var alreadySetup = false
+
+        @Transactional
+        override fun onApplicationEvent(event: ContextRefreshedEvent) {
+            if (alreadySetup) return
+
+            //admin privileges
+            val adminPrivilege = createPrivilegeIfNotFound("ADMIN_PRIVILEGE")
+            val accessAdminPrivilege = createPrivilegeIfNotFound("ACCESS_ADMIN_PRIVILEGE")
+            val editRolePrivilege = createPrivilegeIfNotFound("EDIT_ROLE_PRIVILEGE")
+            val deleteUserPrivilege = createPrivilegeIfNotFound("DELETE_USER_PRIVILEGE")
+            //support privileges
+            val listUserPrivilege = createPrivilegeIfNotFound("LIST_USER_PRIVILEGE")
+            val stolenCardPrivilege = createPrivilegeIfNotFound("STOLEN_CARD_PRIVILEGE")
+            val suspiciousIpPrivilege = createPrivilegeIfNotFound("SUSPICIOUS_IP_PRIVILEGE")
+            //transaction privileges
+            val checkTransactionPrivilege = createPrivilegeIfNotFound("CHECK_TRANSACTION_PRIVILEGE")
+
+
+            val merchantPrivileges = mutableSetOf(
+                checkTransactionPrivilege
+            )
+            val supportPrivilege = mutableSetOf(
+                listUserPrivilege,
+                stolenCardPrivilege,
+                suspiciousIpPrivilege,
+            )
+
+            val adminPrivileges = mutableSetOf(
+                adminPrivilege,
+                deleteUserPrivilege,
+                accessAdminPrivilege,
+                editRolePrivilege,
+                listUserPrivilege
+            )
+
+            createRoleIfNotFound("ADMINISTRATOR", adminPrivileges)
+            createRoleIfNotFound("SUPPORT", supportPrivilege)
+            createRoleIfNotFound("MERCHANT", merchantPrivileges)
+
+            alreadySetup = true
+        }
+
+        @Transactional
+        open fun createPrivilegeIfNotFound(name: String?): Privilege {
+            return privilegeRepository.save(
+                privilegeRepository.findByName(name).orElse(Privilege(name = name))
+            )
+        }
+
+        @Transactional
+        open fun createRoleIfNotFound(name: String?, privileges: MutableSet<Privilege>?): Role {
+            return roleRepository.save(
+                roleRepository.findByName(name).orElse(Role(name = name, privileges = privileges))
+            )
+        }
+    }
+  learner_created: true
+- name: src/antifraud/util/CardNumberValidator.kt
+  visible: true
+  text: |
+    package antifraud.util
+
+    object CardNumberValidator {
+        private const val CARD_NUMBER_LENGTH = 16
+        fun isValid(number: String): Boolean {
+            return if (number.length == CARD_NUMBER_LENGTH) {
+                try {
+                    number.toLong()
+                    LuhnAlgorithm.checksum(number)
+                } catch (e: NumberFormatException) {
+                    false
+                }
+            } else false
+        }
+    }
+  learner_created: true
+- name: src/antifraud/dto/UserDTO.kt
+  visible: true
+  text: |-
+    package antifraud.dto
+
+    import antifraud.model.User
+    import com.fasterxml.jackson.annotation.JsonProperty
+    import jakarta.validation.constraints.NotBlank
+    import jakarta.validation.constraints.NotEmpty
+    import jakarta.validation.constraints.Size
+    import org.modelmapper.ModelMapper
+
+    data class UserDTO(
+        @field:NotBlank @field:NotEmpty @field:Size(min = 8, max = 50) @JsonProperty var id: Long? = null,
+        @field:NotBlank @field:NotEmpty @field:Size(min = 8, max = 50) @JsonProperty var name: String? = null,
+        @field:NotBlank @field:NotEmpty @field:Size(min = 8, max = 50) @JsonProperty var username: String? = null,
+        @field:NotBlank @field:NotEmpty @field:Size(min = 8, max = 50) @JsonProperty var role: String? = null,
+    ) {
+        companion object {
+            fun fromEntity(user: User): UserDTO {
+                return ModelMapper().map(user, UserDTO::class.java).apply {
+                    role = user.roles?.firstOrNull()?.name
+                }
+            }
+
+            fun toEntity(userDto: UserDTO): User {
+                return ModelMapper().map(userDto, User::class.java)
+            }
+        }
+    }
+  learner_created: true
+- name: src/antifraud/model/Transaction.kt
+  visible: true
+  text: |-
+    package antifraud.model
+
+    import antifraud.util.TransactionValidationState
+    import antifraud.util.TransactionValidationState.*
+    import jakarta.persistence.*
+
+    @Entity
+    class Transaction(
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "id", nullable = false) var id: Long? = null,
+        @Column(name = "amount", nullable = false) var amount: Int? = null,
+        @Column(name = "ip", nullable = false) var ip: String? = null,
+        @Column(name = "number", nullable = false) var number: String? = null,
+    ) {
+        companion object {
+            fun validateAmount(amount: Int?): TransactionValidationState {
+                return when {
+                    amount!! < 1 -> INVALID
+                    amount in 1..200 -> ALLOWED
+                    amount in 201..1500 -> MANUAL_PROCESSING
+                    else -> PROHIBITED
+                }
+            }
+        }
+    }
+  learner_created: true
+- name: src/resources/docker-compose.yml
+  visible: true
+  text: |+
+    services:
+      db:
+        container_name: postgres-db
+        image: postgres:latest
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          PGDATA: /data/postgres
+        volumes:
+          - db:/data/postgres
+        ports:
+          - '5332:5432'
+        networks:
+          - db
+        restart: unless-stopped
+
+    networks:
+      db:
+        driver: bridge
+
+    volumes:
+      db:
+
+  learner_created: true
+- name: src/antifraud/dto/LockUserDto.kt
+  visible: true
+  text: |-
+    package antifraud.dto
+
+    import com.fasterxml.jackson.annotation.JsonProperty
+    import jakarta.validation.constraints.NotBlank
+    import jakarta.validation.constraints.NotEmpty
+    import jakarta.validation.constraints.NotNull
+    import jakarta.validation.constraints.Size
+
+    data class LockUserDto(
+        @field:NotBlank @field:NotEmpty @field:Size(min = 8, max = 50) @JsonProperty var username: String? = null,
+        @field:NotNull @field:NotBlank @field:NotEmpty var operation: String? = null,
+    )
+  learner_created: true
+- name: src/antifraud/repository/RoleRepository.kt
+  visible: true
+  text: |-
+    package antifraud.repository
+
+    import antifraud.model.Role
+    import org.springframework.data.jpa.repository.JpaRepository
+    import org.springframework.stereotype.Repository
+    import java.util.Optional
+
+    @Repository
+    interface RoleRepository : JpaRepository<Role, Long> {
+        fun findByName(name: String?): Optional<Role>
+    }
+  learner_created: true
+- name: src/antifraud/service/IpService.kt
+  visible: true
+  text: |-
+    package antifraud.service
+
+    import antifraud.repository.IpRepository
+    import antifraud.model.Ip
+    import org.springframework.stereotype.Service
+    import kotlin.jvm.optionals.getOrNull
+
+    @Service
+    class IpService(
+        private val ipRepository: IpRepository,
+    ) {
+        fun save(ip: Ip): Ip = ipRepository.save(ip)
+        fun findByIp(ip: String): Ip? = ipRepository.findByIp(ip).getOrNull()
+        fun existsByIp(ip: String): Boolean = ipRepository.existsByIp(ip)
+        fun delete(ip: Ip) = ipRepository.delete(ip)
+        fun findAll(): MutableList<Ip> = ipRepository.findAll()
+    }
+  learner_created: true
+- name: src/antifraud/model/Ip.kt
+  visible: true
+  text: |-
+    package antifraud.model
+
+    import jakarta.persistence.*
+    import org.hibernate.annotations.CreationTimestamp
+    import org.hibernate.annotations.UpdateTimestamp
+    import java.sql.Timestamp
+
+    @Entity
+    class Ip(
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "id", nullable = false) var id: Long? = null,
+        @Column(name = "ip", nullable = false) var ip: String? = null,
+        @Column(name = "blocked", nullable = false) var blocked: Boolean = false,
+
+        @CreationTimestamp @Column(name = "created_at", nullable = false) var createdAt: Timestamp? = null,
+        @UpdateTimestamp @Column(name = "updated_at", nullable = false) var updatedAt: Timestamp? = null,
+    )
+  learner_created: true
+- name: src/antifraud/repository/CardRepository.kt
+  visible: true
+  text: |-
+    package antifraud.repository
+
+    import antifraud.model.Card
+    import org.springframework.data.jpa.repository.JpaRepository
+    import org.springframework.stereotype.Repository
+    import java.util.Optional
+
+    @Repository
+    interface CardRepository : JpaRepository<Card, Long> {
+        fun findByNumber(number: String): Optional<Card>
+        fun existsByNumber(number: String): Boolean
+        fun deleteByNumber(number: String)
+    }
+  learner_created: true
+- name: src/antifraud/AntiFraudApplication.java
+  visible: true
+  text: |-
+    package antifraud;
+
+    import org.springframework.boot.SpringApplication;
+    import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+    @SpringBootApplication
+    public class AntiFraudApplication {
+        public static void main(String[] args) {
+            SpringApplication.run(AntiFraudApplication.class, args);
+        }
+    }
+  learner_created: false
+- name: src/antifraud/util/RegionSet.kt
+  visible: true
+  learner_created: true
+- name: src/antifraud/dto/TransactionDTO.kt
+  visible: true
+  text: |-
+    package antifraud.dto
+
+    import antifraud.util.IpAddressUtil
+    import jakarta.validation.constraints.*
+
+    data class TransactionDto(
+        @field:NotNull @field:NotBlank @field:NotEmpty var amount: Int,
+
+        @field:NotNull @field:NotBlank @field:NotEmpty
+        @field:Pattern(regexp = IpAddressUtil.IPV4_REGEX)
+        var ip: String? = null,
+
+        @field:NotNull @field:NotBlank @field:NotEmpty @field:Size(min = 16, max = 16) var number: String? = null,
+    )
+  learner_created: true
+- name: src/antifraud/util/CardNumberConstraint.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/util/UserRoleConstraint.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/util/RegionConstraint.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/dto/NewUserDTO.kt
+  visible: true
+  learner_created: true
+- name: src/antifraud/dto/UpdateUserRoleDTO.kt
+  visible: true
+  learner_created: true
+- name: src/antifraud/controller/TransactionController.kt
+  visible: true
+  text: |+
+    package antifraud.controller
+
+    import antifraud.dto.TransactionDto
+    import antifraud.util.TransactionValidationState.*
+    import antifraud.model.Transaction
+    import antifraud.service.CardService
+    import antifraud.service.IpService
+    import antifraud.util.CardNumberValidator
+    import org.springframework.http.ResponseEntity
+    import org.springframework.web.bind.annotation.*
+    import java.util.*
+
+    @RestController
+    class TransactionController(
+        private val ipService: IpService,
+        private val cardService: CardService,
+    ) {
+        data class ValidationResult(val result: String, val info: String)
+
+        @PostMapping("/api/antifraud/transaction")
+        fun validateTransaction(
+            @RequestBody transactionDto: TransactionDto
+        ): ResponseEntity<Any> {
+            if (transactionDto.amount < 1) {
+                return ResponseEntity.badRequest().body("amount must be greater than 0")
+            }
+
+            if (transactionDto.number?.let { CardNumberValidator.isValid(it) } == false) {
+                return ResponseEntity.badRequest().body("invalid card number")
+            }
+
+            val invalidReasons = mutableListOf<String>()
+
+            var transactionState = ALLOWED
+
+            val suspiciousIp = transactionDto.ip?.let { ipService.findByIp(it) }
+            if (suspiciousIp != null) {
+                transactionState = PROHIBITED
+                invalidReasons.add("ip")
+            }
+
+            val stolenCard = cardService.findByNumber(transactionDto.number!!)
+            if (stolenCard != null) {
+                transactionState = PROHIBITED
+                invalidReasons.add("card-number")
+            }
+
+            val amountValidationState = Transaction.validateAmount(transactionDto.amount)
+            if (amountValidationState == PROHIBITED) {
+                transactionState = PROHIBITED
+                invalidReasons.add("amount")
+            } else if (amountValidationState == MANUAL_PROCESSING && transactionState != PROHIBITED) {
+                transactionState = MANUAL_PROCESSING
+                invalidReasons.add("amount")
+            }
+
+            return ResponseEntity.ok(
+                ValidationResult(
+                    transactionState.toString(),
+                    if (transactionState == ALLOWED) "none" else invalidReasons.apply { sort() }.joinToString(", ")
+                )
+            )
+        }
+    }
+
+  learner_created: true
+- name: src/antifraud/service/TransactionService.kt
+  visible: true
+  learner_created: true
 - name: test/AntiFraudTest.java
   visible: false
   text: |-
@@ -1300,6 +2514,21 @@ files:
         };
     }
   learner_created: false
+- name: src/resources/application.properties
+  visible: true
+  text: |-
+    server.port=28852
+    server.error.include-message=always
+    management.endpoints.web.exposure.include=*
+    management.endpoint.shutdown.enabled=true
+    spring.jackson.serialization.INDENT_OUTPUT=true
+  learner_created: false
+- name: src/antifraud/repository/TransactionRepository.kt
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/18071#comment
-status: Unchecked
-record: -1
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Tue, 18 Jul 2023 11:09:36 UTC"
+record: 5
