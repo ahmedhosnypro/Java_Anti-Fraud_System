@@ -29,9 +29,6 @@ class UserService(
 
     @Transactional
      fun setRole(user: User, role: Role) {
-        if (user.roles.isNullOrEmpty()) {
-            user.roles = mutableSetOf()
-        }
         user.roles = mutableSetOf(role)
         userRepository.save(user)
     }

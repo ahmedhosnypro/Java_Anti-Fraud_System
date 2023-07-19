@@ -27,6 +27,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/Java_Anti-Fraud_System.util.iml" filepath="$PROJECT_DIR$/.idea/modules/util/Java_Anti-Fraud_System.util.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/Java_Anti-Fraud_System.util.main.iml" filepath="$PROJECT_DIR$/.idea/modules/util/Java_Anti-Fraud_System.util.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/Java_Anti-Fraud_System.util.test.iml" filepath="$PROJECT_DIR$/.idea/modules/util/Java_Anti-Fraud_System.util.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Anti-Fraud System/task/task.Java_Anti-Fraud_System.Anti-Fraud_System-task.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Anti-Fraud System/task/task.Java_Anti-Fraud_System.Anti-Fraud_System-task.test.iml" />
     </modules>
   </component>
 </project>

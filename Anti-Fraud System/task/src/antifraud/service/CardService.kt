@@ -11,8 +11,6 @@ class CardService(
 ) {
     fun save(card: Card): Card = cardRepository.save(card)
     fun findByNumber(number: String): Card? = cardRepository.findByNumber(number).getOrNull()
-    fun existByNumber(number: String): Boolean = cardRepository.existsByNumber(number)
-
-    fun delete(card: Card) = cardRepository.delete(card)
-    fun findAll(): MutableList<Card> = cardRepository.findAll()
+    fun findAllByStolenTrue(): MutableList<Card> = cardRepository.findAllByStolenTrue()
+    fun createIfNotFount(number: String): Card = findByNumber(number) ?: save(Card(number = number))
 }

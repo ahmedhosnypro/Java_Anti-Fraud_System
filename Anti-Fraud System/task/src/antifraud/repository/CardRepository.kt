@@ -9,5 +9,5 @@ import java.util.Optional
 interface CardRepository : JpaRepository<Card, Long> {
     fun findByNumber(number: String): Optional<Card>
     fun existsByNumber(number: String): Boolean
-    fun deleteByNumber(number: String)
+    fun findAllByStolenTrue(): MutableList<Card>
 }

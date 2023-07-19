@@ -7,7 +7,7 @@ import org.modelmapper.ModelMapper
 
 data class IpDTO(
     var id: Long? = null,
-    @field:Pattern(regexp =IpAddressUtil.IPV4_REGEX) var ip: String? = null,
+    @field:Pattern(regexp = IpAddressUtil.IPV4_REGEX) var ip: String? = null,
 ) {
     companion object {
         fun fromEntity(ip: Ip): IpDTO =

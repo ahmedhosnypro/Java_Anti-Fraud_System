@@ -1,19 +1,29 @@
 package antifraud.controller
 
 import antifraud.dto.TransactionDTO
-import antifraud.util.TransactionValidationState.*
+import antifraud.dto.TransactionFeedbackDto
+import antifraud.dto.TransactionValidationDTO
 import antifraud.model.Transaction
 import antifraud.service.CardService
 import antifraud.service.IpService
 import antifraud.service.TransactionService
+import antifraud.util.CardNumberConstraint
+import antifraud.util.TransactionState
+import antifraud.util.TransactionState.*
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import kotlin.math.ceil
+
 
 @RestController
 @Validated
+@EnableMethodSecurity(prePostEnabled = true)
+@RequestMapping("/api/antifraud")
 class TransactionController(
     private val ipService: IpService,
     private val cardService: CardService,
@@ -21,9 +31,10 @@ class TransactionController(
 ) {
     data class ValidationResult(val result: String, val info: String)
 
-    @PostMapping("/api/antifraud/transaction")
-    fun validateTransaction(@RequestBody @Valid transactionDto: TransactionDTO): ResponseEntity<Any> {
-        val transaction = TransactionDTO.toEntity(transactionDto)
+    @PostMapping("/transaction")
+    @PreAuthorize("hasAuthority('CHECK_TRANSACTION_PRIVILEGE')")
+    fun validateTransaction(@RequestBody @Valid transactionValidationDTO: TransactionValidationDTO): ResponseEntity<Any> {
+        val transaction = TransactionValidationDTO.toEntity(transactionValidationDTO)
         transactionService.save(transaction)
         val invalidReasons = mutableListOf<String>()
 
@@ -35,12 +46,11 @@ class TransactionController(
             invalidReasons.add("ip")
         }
 
-        val stolenCard = cardService.findByNumber(transaction.number!!)
-        if (stolenCard != null) {
+        val card = cardService.createIfNotFount(transaction.number!!)
+        if (card.stolen) {
             transactionState = PROHIBITED
             invalidReasons.add("card-number")
         }
-
 
         val regions = transactionService.countRegions(transaction)
         if (regions > 3) {
@@ -61,7 +71,7 @@ class TransactionController(
         }
 
 
-        val amountValidationState = Transaction.validateAmount(transaction.amount)
+        val amountValidationState = Transaction.validateAmount(transaction, card)
         if (amountValidationState == PROHIBITED) {
             transactionState = PROHIBITED
             invalidReasons.add("amount")
@@ -70,6 +80,7 @@ class TransactionController(
             invalidReasons.add("amount")
         }
 
+        transaction.result = transactionState
         transactionService.save(transaction)
 
         return ResponseEntity.ok(
@@ -79,5 +90,101 @@ class TransactionController(
             )
         )
     }
-}
 
+    @GetMapping("/history")
+    @PreAuthorize("hasAuthority('LIST_TRANSACTION_PRIVILEGE')")
+    fun listAllTransactions(): ResponseEntity<Any> =
+        ResponseEntity.ok(transactionService.findAll().sortedBy { it.id }.map { TransactionDTO.fromEntity(it) })
+
+    @GetMapping("/history/{number}")
+    @PreAuthorize("hasAuthority('LIST_TRANSACTION_PRIVILEGE')")
+    fun listAllTransactionsByCardNumber(
+        @PathVariable @CardNumberConstraint number: String
+    ): ResponseEntity<Any> {
+        val transactions = transactionService.findAllByNumber(number).sortedBy { it.id }.map { TransactionDTO.fromEntity(it) }
+        if (transactions.isEmpty()) {
+            return ResponseEntity.notFound().build()
+        }
+        return ResponseEntity.ok(transactions)
+    }
+
+    @PutMapping("/transaction")
+    @PreAuthorize("hasAuthority('UPDATE_TRANSACTION_PRIVILEGE')")
+    fun updateTransactionFeedback(@RequestBody @Valid transactionFeedbackDto: TransactionFeedbackDto): ResponseEntity<Any> {
+        val transaction =
+            transactionService.findById(transactionFeedbackDto.transactionId!!) ?: return ResponseEntity.notFound()
+                .build()
+
+        if (transaction.feedback != null) {
+            return ResponseEntity.status(409).build()
+        }
+
+        val card = cardService.createIfNotFount(transaction.number!!)
+
+        val feedback = TransactionState.valueOf(transactionFeedbackDto.feedback!!)
+        transaction.feedback = feedback
+        when (transaction.result!!) {
+            ALLOWED -> {
+                when (feedback) {
+                    MANUAL_PROCESSING -> {
+                        card.maxAllowed = downLimit(card.maxAllowed, transaction.amount!!)
+                    }
+
+                    PROHIBITED -> {
+                        card.maxAllowed = downLimit(card.maxAllowed, transaction.amount!!)
+                        card.maxManualProcessing = downLimit(card.maxManualProcessing, transaction.amount!!)
+                    }
+
+                    else -> {
+                        return ResponseEntity.unprocessableEntity().build()
+                    }
+                }
+            }
+
+            MANUAL_PROCESSING -> {
+                when (feedback) {
+                    ALLOWED -> {
+                        card.maxAllowed = upLimit(card.maxAllowed, transaction.amount!!)
+                    }
+
+                    PROHIBITED -> {
+                        card.maxManualProcessing = downLimit(card.maxManualProcessing, transaction.amount!!)
+                    }
+
+                    else -> {
+                        return ResponseEntity.unprocessableEntity().build()
+                    }
+                }
+            }
+
+            PROHIBITED -> {
+                when (feedback) {
+                    ALLOWED -> {
+                        card.maxAllowed = upLimit(card.maxAllowed, transaction.amount!!)
+                        card.maxManualProcessing = upLimit(card.maxManualProcessing, transaction.amount!!)
+                    }
+
+                    MANUAL_PROCESSING -> {
+                        card.maxManualProcessing = upLimit(card.maxManualProcessing, transaction.amount!!)
+                    }
+
+                    else -> {
+                        return ResponseEntity.unprocessableEntity().build()
+                    }
+                }
+            }
+
+            else -> {
+                return ResponseEntity.unprocessableEntity().build()
+            }
+        }
+
+        cardService.save(card)
+        transactionService.save(transaction)
+        return ResponseEntity.ok().body(TransactionDTO.fromEntity(transaction))
+    }
+
+    fun upLimit(currentLimit: Int, transactionAmount: Int) = ceil((.8 * currentLimit + .2 * transactionAmount)).toInt()
+    fun downLimit(currentLimit: Int, transactionAmount: Int) =
+        ceil((.8 * currentLimit - .2 * transactionAmount)).toInt()
+}

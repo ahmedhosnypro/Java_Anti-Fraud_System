@@ -290,8 +290,6 @@ G.idea/sonarlint/issuestore/c/5/c5e1c624c812d0d35cca24132c58abf6bfaac445,6\6\66
 w
 G.idea/sonarlint/issuestore/b/f/bf1406e9e7bca954bb32cda3aea5784a48115259,8\e\8e0f37936fb9b2793f4cbf35ebed3f21574c3b10
 Å
-Q.idea/sonarlint/securityhotspotstore/0/0/0036590807e10e99c368eb1ab1535dbad9ff961a,7\4\746a65831e30a6b791452ddf5ca83409e3a54c93
-Å
 Q.idea/sonarlint/securityhotspotstore/0/0/001851a47b5fae057191242e2df3df39f51abe06,a\7\a79bebcd180756508ceffb19fc03bb210708e611
 w
 G.idea/sonarlint/issuestore/e/d/ed3303cf87b06266da1aac25e753942e67646197,0\9\090a28cfc0be4bdd16e67fd71977a6b1c341431d
@@ -416,19 +414,13 @@ Q.idea/sonarlint/securityhotspotstore/0/d/0da38fabb2c6e101ab018f0e32f8183d5e4529
 Å
 Q.idea/sonarlint/securityhotspotstore/1/3/13a114e87357cd7fd67461747d5e01079c3dd5b6,7\7\77d6329645fb24ddd70f71a4c332f19b0bca16dc
 Å
-Q.idea/sonarlint/securityhotspotstore/b/3/b33a746be2194e31915c28320f97ae2877ac671a,c\9\c96711dce3ae8b3f92d37396c44a1eb39af8e29e
-Å
 Q.idea/sonarlint/securityhotspotstore/b/3/b3102ef1ea8e9a958a8aa90c2de54997befdca9c,e\2\e203d77c1c92e9a2996e9cb7de04757abe644362
 Å
 Q.idea/sonarlint/securityhotspotstore/f/1/f14c229d47582f3614cd2eb928b2fe1822781c6b,e\6\e632c236098cf5833e0e4414d87ec2a16eac5b28
 Å
 Q.idea/sonarlint/securityhotspotstore/f/1/f15c5949173953fa0b6d791e94cf9752c9d1e8bc,3\9\393170947d6212b8b929ecb4821d7af0533cf8aa
 Å
-Q.idea/sonarlint/securityhotspotstore/d/6/d6113d1b1d808df26a5be234c067002243c4798b,b\3\b31cd478da4b8ce95a0b69bb98059cf540335ae7
-Å
 Q.idea/sonarlint/securityhotspotstore/8/7/871fa26ccd25e3cc901fb292135058fb73212c41,a\a\aa44d9d461a99da124164deaa74414d6ec54f5a7
-Å
-Q.idea/sonarlint/securityhotspotstore/4/b/4bcd839ede680f988b7bb26e4b24995b01669cf7,4\b\4b4b31ec79d7fd9685b3db49ecb1735a1eb15269
 Å
 Q.idea/sonarlint/securityhotspotstore/7/7/771e06144e4d11570b8e4b4ecc58fcb445020cb1,3\4\34bee9c35a98de5f9591cdfb8004b6c082156cb7
 w
@@ -466,8 +458,6 @@ G.idea/sonarlint/issuestore/8/c/8c94c2fcad2b3e0700903b7161cca416b18c460e,c\5\c5
 w
 G.idea/sonarlint/issuestore/7/7/771e06144e4d11570b8e4b4ecc58fcb445020cb1,4\5\459ec5875ee57f8f241bc185e012dc6a82261b7f
 w
-G.idea/sonarlint/issuestore/4/b/4bcd839ede680f988b7bb26e4b24995b01669cf7,b\6\b64c0bb66d7831b5057c686edd7d902f7c1dd03c
-w
 G.idea/sonarlint/issuestore/3/e/3e10f0bd7ab347aa788205fca31f7154b0a1c723,7\b\7b834b0d2658f544e90ab0e8cb9c826c85410f7c
 w
 G.idea/sonarlint/issuestore/3/1/31644533b93f3299d00f7d7755d427f779402cb4,6\6\661595efaef82b3610a2ce9096001e3f0004dd31
@@ -493,10 +483,6 @@ w
 G.idea/sonarlint/issuestore/b/3/b3102ef1ea8e9a958a8aa90c2de54997befdca9c,2\3\234f3008932ecce2af401a8726c1279d1336c120
 w
 G.idea/sonarlint/issuestore/9/a/9aed88f31eac276604c6355c1adcc0bce1f80fd6,0\1\0188cc1adb7d21a369f63788309ba8ab137ed687
-w
-G.idea/sonarlint/issuestore/b/3/b33a746be2194e31915c28320f97ae2877ac671a,e\4\e4e27223cac341da9c068aa7d3dd4b93057292aa
-w
-G.idea/sonarlint/issuestore/c/a/ca2b4ea031f2452e3d3025e837aa4b53f5a21ed3,8\8\88db6b8f7ae1f4eab14ff84a222ee61c89d246ce
 Å
 Q.idea/sonarlint/securityhotspotstore/8/f/8fb9271cbf9da6009d568ba25a8a621447a7e7a9,c\7\c7f97d8da3cb495aa94bc5d0c182055a37f91f32
 Å
@@ -520,8 +506,6 @@ Q.idea/sonarlint/securityhotspotstore/a/8/a85382bb69e65b6458d75e41594a454f0783bb
 Å
 Q.idea/sonarlint/securityhotspotstore/b/d/bdc28db638196e1166f32ee786fb061ad103ceb4,4\b\4b9557c3dc09cb3ea45ef7ed044278294a78d9eb
 Å
-Q.idea/sonarlint/securityhotspotstore/f/b/fb91328dd19a9cc5cabb75b66f8a1d37d344621c,b\c\bcab1bb2887a32c27115f370aa548da5078063c5
-Å
 Q.idea/sonarlint/securityhotspotstore/f/b/fb8d5d57742c51b77e82d89cf1c3d55737592096,3\0\30bd72d4b41cadf3d0735d4fd9fe59ed91fdeb15
 w
 G.idea/sonarlint/issuestore/c/2/c25cbe6c51f7a655f114a003876d77cf7970b4ee,0\7\0723e0264efe26d981a9a1b3f73bee6904e40324
@@ -531,8 +515,6 @@ w
 G.idea/sonarlint/issuestore/7/5/755ceabb89673606ce2f396497b1c3de699cc3e6,7\b\7bdfc0450fba286ffcb795e7435e08a29ab37692
 w
 G.idea/sonarlint/issuestore/8/5/85bbb9234d961e79c3b6e8ea43be2619b37fa86f,a\7\a7512af0135f5a84f2398920b649d4645df88d34
-w
-G.idea/sonarlint/issuestore/8/5/85bbab0a9fb522f0edd138794f38334f2444e185,f\e\fe0ceea23f23c544140f347a58af647592ec7396
 w
 G.idea/sonarlint/issuestore/6/3/63de23bf23a410de25193cb426cc588ea97e124d,b\8\b88d998ebce9d8ba49a7ee2acdfbecfdc32c9abc
 w
@@ -562,8 +544,6 @@ Q.idea/sonarlint/securityhotspotstore/f/7/f7819ea138c33fec28e7e536cb2de34db38fc1
 Å
 Q.idea/sonarlint/securityhotspotstore/d/8/d8bbc8a9a52dfecc4372464ad54374107b632723,7\2\722da7b3e37c8ea0adb98d66b3152b3d86af8c3c
 Å
-Q.idea/sonarlint/securityhotspotstore/8/5/85bbab0a9fb522f0edd138794f38334f2444e185,b\c\bcdefb7636c513224a1847ee90594f55a462f083
-Å
 Q.idea/sonarlint/securityhotspotstore/d/2/d2adac5c30954c67b8e683f6956cc25a35a603f8,9\e\9e7bcbb86b1b6b1f6caa3dc039e18d8b22912305
 Å
 Q.idea/sonarlint/securityhotspotstore/8/5/85bbb9234d961e79c3b6e8ea43be2619b37fa86f,e\9\e9b61165da4dff106ae29563a33ac37c9b86ed86
@@ -581,8 +561,6 @@ w
 G.idea/sonarlint/issuestore/b/d/bdc28db638196e1166f32ee786fb061ad103ceb4,e\1\e1cac56c0d220b0be2c60840da7548165d664770
 Å
 Q.idea/sonarlint/securityhotspotstore/8/c/8c94c2fcad2b3e0700903b7161cca416b18c460e,0\0\00418308c76f4353de9ed7c2b987ce3dd462db52
-Å
-Q.idea/sonarlint/securityhotspotstore/c/a/ca2b4ea031f2452e3d3025e837aa4b53f5a21ed3,a\5\a5c9c112ddd091e28ddcfbcf1ddcae26411ce76f
 Å
 Q.idea/sonarlint/securityhotspotstore/6/4/648846345d1504467fb96837d6374a4c7b40442d,a\8\a8985998d0e38a75d2207e923a636e2c4f9bbc25
 Å
@@ -610,8 +588,6 @@ G.idea/sonarlint/issuestore/1/2/1222f0b17eff4f6db4d7831ac02ec5e835156ccd,2\b\2b
 Å
 Q.idea/sonarlint/securityhotspotstore/f/d/fd486637cdd987c81e0301b183c44a4f9cbbd001,9\0\90a66fdb034872d193a611e962e0848d189ee695
 w
-G.idea/sonarlint/issuestore/f/b/fb91328dd19a9cc5cabb75b66f8a1d37d344621c,2\9\29d6ba96fa2f264e659050e5ca694bc2c11e7554
-w
 G.idea/sonarlint/issuestore/f/b/fb8d5d57742c51b77e82d89cf1c3d55737592096,c\c\cc50fd381eec0b259a82140b9f5226efffd8836d
 w
 G.idea/sonarlint/issuestore/a/8/a85382bb69e65b6458d75e41594a454f0783bb18,3\1\31c04cc01d3b66d53c4cd15b1c370cbfd7ee2ab2
@@ -619,10 +595,6 @@ w
 G.idea/sonarlint/issuestore/e/9/e950ac7f0bc4959e68891b6b5a2ae15189b44bfb,f\2\f2564ab4ddc350aad1ba260f0f213221774668cc
 w
 G.idea/sonarlint/issuestore/8/e/8e84aca83e97ede24571930d68c39fb489565876,d\3\d335b4d94d8a05bfe15656a9e2c607cc894deb42
-w
-G.idea/sonarlint/issuestore/d/6/d6113d1b1d808df26a5be234c067002243c4798b,0\5\05618f516b4b219dce000c512ef1dc93f8adef3e
-Å
-Q.idea/sonarlint/securityhotspotstore/5/b/5b85f749739d94cb96abe6761e80f9b08b1fcc26,9\b\9bf74404429585f8952ce5ee3ed8216cac66c61d
 Å
 Q.idea/sonarlint/securityhotspotstore/5/b/5b479505a56bf52df9ba2a04db7ec336a323c999,c\7\c7b2685f983b2e5898fde941069a4be44cda7e24
 Å
@@ -658,8 +630,6 @@ G.idea/sonarlint/issuestore/5/b/5b479505a56bf52df9ba2a04db7ec336a323c999,2\6\26
 w
 G.idea/sonarlint/issuestore/8/7/871fa26ccd25e3cc901fb292135058fb73212c41,2\d\2d0304e5c0f120db51a0a46815f08b9a1f78cb5a
 w
-G.idea/sonarlint/issuestore/5/b/5b85f749739d94cb96abe6761e80f9b08b1fcc26,0\8\0886ceaf1fa0c023833217910a32c4d015fdab08
-w
 G.idea/sonarlint/issuestore/5/b/5b134b64e046ed1560d9f56c08f9bc9d53563683,c\0\c0f3730567ab1032a1357d84419f2a675a1e30ae
 w
 G.idea/sonarlint/issuestore/0/d/0da38fabb2c6e101ab018f0e32f8183d5e4529e9,9\3\93cfe35ff79c163217353f77ce131eac544c8d49
@@ -671,8 +641,6 @@ w
 G.idea/sonarlint/issuestore/0/3/0331579dd38adc4638bacd7d50ca4373117ac7db,d\c\dcce3ae51decb1350c27466d2b8f52b21c132f7f
 w
 G.idea/sonarlint/issuestore/0/0/001851a47b5fae057191242e2df3df39f51abe06,1\1\111a233d1d7a5d48fd13987ffcba2c88fbc6eb8c
-w
-G.idea/sonarlint/issuestore/0/0/0036590807e10e99c368eb1ab1535dbad9ff961a,5\4\5467153555b25c3d3b1fc99ccfd99cd8561c1783
 w
 G.idea/sonarlint/issuestore/f/7/f7819ea138c33fec28e7e536cb2de34db38fc121,6\7\67fa304b8cddf1fed80b91f5b705d64cb3dab32a
 w
@@ -771,3 +739,252 @@ w
 G.idea/sonarlint/issuestore/a/d/ad6c6038987ed4e6e8609cacae120c1fbbbbd85d,2\6\2633b7fe44ab0bbbfd38f260ae8740f382adf28c
 w
 G.idea/sonarlint/issuestore/a/d/adc198eaa39d99c7a4350b907fe7ec1d7efa6a23,7\e\7e6582324cf9e68a048deb8b7da563995c526a78
+p
+@Anti-Fraud System/task/src/antifraud/util/CardNumberValidator.kt,f\a\fa6b6b99674400382d679adbc945b4719c1948c6
+o
+?Anti-Fraud System/task/src/antifraud/repository/IpRepository.kt,7\5\75dbb53e59203d19ffd4133fc0363e443ecbc83f
+÷
+•.idea/modules/Anti-Fraud System/task/build/generated/sources/headers/java/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-generated-sources-headers-java.main.iml,0\d\0de7bc278c1fcee3ee1ca37c84be95528db75832
+÷
+•.idea/modules/Anti-Fraud System/task/build/generated/sources/headers/java/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-generated-sources-headers-java.test.iml,3\9\3940026df0502a3d2c80222706e657aa9d390587
+:
+
+.gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302
+Ó
+Ω.idea/modules/Anti-Fraud System/task/build/generated/sources/annotationProcessor/java/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-generated-sources-annotationProcessor-java.main.iml,6\5\65b17f35c74b53e874cfb030aa03a086b20da932
+—
+†.idea/modules/Anti-Fraud System/task/build/generated/sources/headers/java/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-generated-sources-headers-java.iml,4\1\4132598ed59139d369df38834965345dfb4d9a29
+Ó
+Ω.idea/modules/Anti-Fraud System/task/build/generated/sources/annotationProcessor/java/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-generated-sources-annotationProcessor-java.test.iml,d\3\d399bcb4fda81387826b6403e79c25b0cf3722cf
+È
+∏.idea/modules/Anti-Fraud System/task/build/generated/sources/annotationProcessor/java/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-generated-sources-annotationProcessor-java.iml,9\f\9f86c83569f917943fe0f084ef3c68cb48f734fe
+X
+(.idea/modules/Java_Anti-Fraud_System.iml,2\2\2241468f7b3c5c8fd5978acd39321466db152695
+Ü
+V.idea/modules/Anti-Fraud System/task/Java_Anti-Fraud_System.Anti-Fraud_System-task.iml,8\e\8e4f764c6d6ec597107287a5359843e8269de55e
+ü
+o.idea/modules/Anti-Fraud System/task/build/tmp/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-tmp.test.iml,b\5\b5fd2b7a569b174d982057ceb32fabad9391609c
+g
+7.idea/modules/util/Java_Anti-Fraud_System.util.main.iml,5\f\5f3a5729d28290f3284930d88d2167e0908131bf
+≤
+Å.idea/modules/Anti-Fraud System/task/build/test-results/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-test-results.test.iml,8\4\8466e7f01d362c24eeab76c1562fc47f0266efd6
+|
+LAnti-Fraud System/task/src/antifraud/exception/ControllerExceptionHandler.kt,3\c\3cca808a4fcf549fe60842185cd4c5b2ff7c2ed0
+ü
+o.idea/modules/Anti-Fraud System/task/build/tmp/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-tmp.main.iml,1\3\138a05793c4adc314fa1460a21f9b522396d0bc2
+¥
+É.idea/modules/Anti-Fraud System/task/build/reports/tests/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-reports-tests.test.iml,9\a\9a4340bf76012dd93db127a1be15e463f477b1ab
+≤
+Å.idea/modules/Anti-Fraud System/task/build/test-results/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-test-results.main.iml,4\7\47eb52755092a83c1767c56909b4eaafcafbccc3
+≤
+Å.idea/modules/Anti-Fraud System/task/build/classes/java/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-classes-java.test.iml,8\f\8f7ff553812e746707aadde59db07ce45a31881d
+¥
+É.idea/modules/Anti-Fraud System/task/build/reports/tests/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-reports-tests.main.iml,d\6\d6c306aa110bf5e807c573ef483c675513e9e64c
+≤
+Å.idea/modules/Anti-Fraud System/task/build/classes/java/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-classes-java.main.iml,6\1\61fc2b71188892fb274dcb25a75e268d1c3f41e2
+b
+2.idea/modules/util/Java_Anti-Fraud_System.util.iml,3\9\39cad2366a1e54b6e519bfb7215e96fa390e0c02
+ã
+[.idea/modules/Anti-Fraud System/task/Java_Anti-Fraud_System.Anti-Fraud_System-task.main.iml,8\b\8b9a1194fcdffbb026d779e83df1ae0a86156057
+¨
+|.idea/modules/Anti-Fraud System/task/build/test-results/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-test-results.iml,f\5\f53bdf0c8be2ca7de176ae555eba22dd45609a7f
+ö
+j.idea/modules/Anti-Fraud System/task/build/tmp/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-tmp.iml,1\e\1e90ede6907f0e35b9ee88c0a7a1979e39bd616f
+¨
+|.idea/modules/Anti-Fraud System/task/build/classes/java/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-classes-java.iml,2\e\2e282121825304ffaa5dac63c8b3ab862ee0c0da
+Æ
+~.idea/modules/Anti-Fraud System/task/build/reports/tests/Java_Anti-Fraud_System.Anti-Fraud_System-task-build-reports-tests.iml,8\9\898b4432aec2826503bbca7c90890ccf3f9df100
+d
+4.idea/libraries/Gradle__io_smallrye_jandex_3_0_5.xml,b\f\bf3ea553260c466eed05fdc567b1d4591f443fc6
+{
+K.idea/libraries/Gradle__jakarta_activation_jakarta_activation_api_2_1_2.xml,7\8\78415fe69d0fee9637790e96533717a42ec8769e
+p
+@.idea/libraries/Gradle__io_micrometer_micrometer_core_1_11_1.xml,6\1\613f42bc04d841283d38cd6ac077c8560a7c44fe
+w
+G.idea/libraries/Gradle__io_micrometer_micrometer_observation_1_11_1.xml,4\4\44017124dc10986e956597d8fd35e48e600ab10e
+w
+G.idea/libraries/Gradle__com_sun_istack_istack_commons_runtime_4_1_2.xml,8\b\8bc54396a40e3a1c653fcf77abeb284b871a3727
+s
+C.idea/libraries/Gradle__io_micrometer_micrometer_commons_1_11_1.xml,9\d\9dad9076b9b2b15dddcef5339e49fce687b954b3
+é
+^.idea/libraries/Gradle__com_fasterxml_jackson_module_jackson_module_parameter_names_2_15_2.xml,1\0\10f6a9db6fc1223ca258fa45f792cee4f1794aae
+l
+<.idea/libraries/Gradle__com_google_code_gson_gson_2_10_1.xml,5\1\51f986a4267ec471dd09d0cc94833222239d37f2
+á
+W.idea/libraries/Gradle__com_fasterxml_jackson_datatype_jackson_datatype_jdk8_2_15_2.xml,9\e\9eaec1bfe9958d3a7d1d226ca4c3706e89a1e683
+â
+Y.idea/libraries/Gradle__com_fasterxml_jackson_datatype_jackson_datatype_jsr310_2_15_2.xml,8\b\8b984ee7080f017fc6795533dbcb2505d9c0306e
+z
+J.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_core_2_15_2.xml,1\1\118e083feb7dd1301b46785640dae918ef6910db
+~
+N.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_databind_2_15_2.xml,e\d\edebccd05f4e388df4f4c887c0b26a0e9729565e
+m
+=.idea/libraries/Gradle__ch_qos_logback_logback_core_1_4_8.xml,a\7\a7b1c2567d02fb40a72ca316b80839e39d0ca5bc
+Å
+Q.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_annotations_2_15_2.xml,7\4\74c2abc5ea7d5892dd6c290cd28a2e0ff4a8a890
+g
+7.idea/modules/util/Java_Anti-Fraud_System.util.test.iml,f\8\f8605ae58fb0a94842b08bb7b9207c542206fd0b
+p
+@.idea/libraries/Gradle__ch_qos_logback_logback_classic_1_4_8.xml,9\c\9cd161db084781f6cbed1d6920f81b4ef1438930
+x
+H.idea/libraries/Gradle__org_hibernate_orm_hibernate_core_6_2_5_Final.xml,c\c\cc6609333821c6a3d91ec18e4c196230de19e90d
+w
+G.idea/libraries/Gradle__org_jboss_logging_jboss_logging_3_5_1_Final.xml,4\b\4b99ade1dc23b2711ad652fad5bf257f9b54fede
+i
+9.idea/libraries/Gradle__org_glassfish_jaxb_txw2_4_0_3.xml,e\a\ea3dbf40eac01f72e351a5ac7376882ea3adc7a8
+ä
+Z.idea/libraries/Gradle__org_hibernate_common_hibernate_commons_annotations_6_0_6_Final.xml,5\2\525ec9ebbf88b93e5939688fe2d0e804959392bf
+n
+>.idea/libraries/Gradle__org_glassfish_jaxb_jaxb_core_4_0_3.xml,6\1\61125192fe592eebef986f576fa66889b3abf34d
+q
+A.idea/libraries/Gradle__org_glassfish_jaxb_jaxb_runtime_4_0_3.xml,2\a\2a68c2c4763b54f1a9e05179048f177653a8c37d
+t
+D.idea/libraries/Gradle__org_checkerframework_checker_qual_3_31_0.xml,e\5\e53811d48bcf8e6ffa7c244d4119011e4f94841a
+t
+D.idea/libraries/Gradle__org_eclipse_angus_angus_activation_2_0_1.xml,2\0\204729159aa828a8431c73614ee32dbc332b62b3
+Ç
+R.idea/libraries/Gradle__org_apache_tomcat_embed_tomcat_embed_websocket_10_1_10.xml,1\4\147e2c73558a18b088f46feed862bff7716e5e2e
+k
+;.idea/libraries/Gradle__org_assertj_assertj_core_3_24_2.xml,f\7\f7a0900d667e7f96089847f75fd9d2a20e646a48
+}
+M.idea/libraries/Gradle__org_apache_tomcat_embed_tomcat_embed_core_10_1_10.xml,6\b\6bf3e5017504439713ad4bf97c858b553f3e9f8b
+{
+K.idea/libraries/Gradle__org_apache_tomcat_embed_tomcat_embed_el_10_1_10.xml,f\d\fd0cc4a60fa5d329f7f2b07e521d53a9041a741f
+u
+E.idea/libraries/Gradle__org_apache_logging_log4j_log4j_api_2_20_0.xml,a\3\a30d03831185a1c4106c03f1ea2aa9afc38c4b82
+z
+J.idea/libraries/Gradle__org_apache_logging_log4j_log4j_to_slf4j_2_20_0.xml,d\c\dc805bb8a839077f61ebec60de2318c6b1b78c73
+s
+C.idea/libraries/Gradle__jakarta_inject_jakarta_inject_api_2_0_1.xml,7\4\74ae9b5f0eeb00a8d527fdbf8d27bf8ec5e0ec8e
+k
+;.idea/libraries/Gradle__net_bytebuddy_byte_buddy_1_14_5.xml,0\d\0d25dac1534f6def1e6076d2164866eb0fc3e8bc
+Ü
+V.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_logging_3_1_1.xml,5\3\5330a4d4c9321bda3adfe8ce92c08375fb7b30db
+á
+W.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_security_3_1_1.xml,0\4\0444f576b7da5b074f6d6fa20e1710f3441b2dc8
+S
+#Anti-Fraud System/task/build.gradle,f\1\f1014d40312a2dd05f4955440c4190e89210816b
+É
+S.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_jdbc_3_1_1.xml,e\5\e513bc5d56bb1c2db0807b0ec436611f94bee0cb
+É
+S.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_json_3_1_1.xml,b\3\b3d1bfc0f3ac08533a96dd670a0047c05487c8c4
+Ç
+R.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_aop_3_1_1.xml,7\e\7e7f78df1e11986ba20ee5afa0a2737a50ddc9ec
+á
+W.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_data_jpa_3_1_1.xml,6\8\680bccbd199e0147cdb626f5bc345358fe984316
+i
+9Anti-Fraud System/Stolen cards   suspicious IPs/task.html,7\4\74c3903882969ecae3f3cfe43a42fc76839d1e8f
+~
+N.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_3_1_1.xml,9\2\9257090f2c1364edce0a0bb0b5e6b8052751427d
+á
+W.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_actuator_3_1_1.xml,f\7\f72f1019fcb8d4c6c6ec40638cd0af528bb51e85
+]
+-Anti-Fraud System/Rule-based system/task.html,0\e\0e8b87a7c5175fa4395dd13fe14e254abe35d154
+ç
+].idea/libraries/Gradle__org_springframework_boot_spring_boot_actuator_autoconfigure_3_1_1.xml,3\b\3b34cec6cf1218285a759a092ada540570f76676
+i
+9Anti-Fraud System/Simple transaction validation/task.html,3\c\3c3af2e86bd4910394422b16c9e0e07841159487
+Ñ
+T.idea/libraries/Gradle__org_springframework_boot_spring_boot_autoconfigure_3_1_1.xml,0\f\0fb8118eb33b2534708dbc1d7f647f4b65640a23
+Y
+)Anti-Fraud System/Authorization/task.html,1\7\176fea3b3fa29f0c1aaba3622637016f64977b62
+v
+F.idea/libraries/Gradle__org_springframework_boot_spring_boot_3_1_1.xml,c\1\c13ebe8667e32bd8bd38420a78d4636a042f191e
+c
+3Anti-Fraud System/task/src/antifraud/dto/UserDTO.kt,4\2\42e2675ae516e6b6cd39dc22b0602dd8d91f2a15
+Z
+*Anti-Fraud System/Authentication/task.html,7\5\753ef532ab84fed496cee8978d5fda67f502fff0
+
+O.idea/libraries/Gradle__org_springframework_boot_spring_boot_actuator_3_1_1.xml,9\0\90b6778f85c0388834503a809a99ec806d84c3df
+h
+8.idea/libraries/Gradle__org_slf4j_jul_to_slf4j_2_0_7.xml,c\7\c76d7d554c6a49087ed34052fb6bb0fd5d3cf33d
+T
+$Anti-Fraud System/Feedback/task.html,5\5\55c51f80fcefc8ee1270a4b2f00522d8a82f3991
+e
+5.idea/libraries/Gradle__org_slf4j_slf4j_api_2_0_7.xml,9\c\9cebffc3d13f73f5427016bdb99c9b1838e9657c
+l
+<.idea/libraries/Gradle__org_postgresql_postgresql_42_6_0.xml,a\7\a7683b80c286d743ea4d063a1e15788010961c52
+l
+<.idea/libraries/Gradle__org_projectlombok_lombok_1_18_28.xml,b\a\ba1e964c1b8496da808fa10a886b8c2afab93277
+_
+/Anti-Fraud System/Authentication/task-info.yaml,1\0\10cdd0c37d462c810d558bc31874d46bdcf3756e
+x
+H.idea/libraries/Gradle__org_springframework_spring_expression_6_0_10.xml,9\b\9bdd0ab1c5159df371b681e77c80af2df1b882ec
+q
+A.idea/libraries/Gradle__org_springframework_spring_jcl_6_0_10.xml,e\5\e5c6a294409e7cc3f71fc791ecfeca6f5b06f55e
+u
+E.idea/libraries/Gradle__org_springframework_spring_context_6_0_10.xml,4\d\4d6529db010ce7d6f4b71ff277cf3109127a0cf2
+f
+6Anti-Fraud System/Authentication/task-remote-info.yaml,5\5\554f0a001fa012ef7bb20c6b9e670d77dd0c88ea
+r
+B.idea/libraries/Gradle__org_springframework_spring_core_6_0_10.xml,d\c\dc2016f914675aa4fb168ba5917ef98b00286463
+^
+.Anti-Fraud System/Authorization/task-info.yaml,9\b\9bba6d10f2bc29bee957e73570623ea8a86eae5d
+u
+E.idea/libraries/Gradle__org_springframework_spring_aspects_6_0_10.xml,d\1\d11a10c14bd0b8c2b46b317f12eb2bcf11a511ce
+s
+C.idea/libraries/Gradle__org_springframework_spring_beans_6_0_10.xml,8\9\899f7ccb6990505494cb26a8f97f16ba5c03705a
+Ç
+R.idea/libraries/Gradle__org_springframework_security_spring_security_web_6_1_1.xml,e\e\ee1143468a9acb558ad3cb31ffe2be5f68d8bcb1
+e
+5Anti-Fraud System/Authorization/task-remote-info.yaml,6\f\6fec8e3879c3710a7e55ec4c06363e5288b6dbbd
+q
+A.idea/libraries/Gradle__org_springframework_spring_aop_6_0_10.xml,2\3\23c008133fc57ce55258dfb7ab4686fc8c09e2e0
+u
+EAnti-Fraud System/Stolen cards   suspicious IPs/task-remote-info.yaml,c\1\c18db0ded7bea733532b57f5c2d9008f06034b79
+É
+S.idea/libraries/Gradle__org_springframework_security_spring_security_core_6_1_1.xml,d\8\d8e3826e585879d9164615ac44eb6e1e1835e7e0
+n
+>Anti-Fraud System/Stolen cards   suspicious IPs/task-info.yaml,4\c\4cf3e0aff87a17c9619a9891859a88b4ccd63b03
+Ö
+U.idea/libraries/Gradle__org_springframework_security_spring_security_crypto_6_1_1.xml,6\8\68457650522496d8d0785f69cfe85045cc93e797
+b
+2Anti-Fraud System/Rule-based system/task-info.yaml,0\2\0251f892ace57804d0674b713a57dac5f1826da4
+z
+J.idea/libraries/Gradle__org_springframework_data_spring_data_jpa_3_1_1.xml,b\b\bb3078a2715e4a50114615580cc7291b7e6cd17e
+Ö
+U.idea/libraries/Gradle__org_springframework_security_spring_security_config_6_1_1.xml,e\d\ed293cd755fbcdc7a2764d743a8fa6984919fc1a
+Ç
+R.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_web_3_1_1.xml,4\3\4319c9d905f209378f886cc07a1ceda3878e57b5
+i
+9Anti-Fraud System/Rule-based system/task-remote-info.yaml,f\b\fb054954530796e12bc3c6ffde78878efa168596
+~
+N.idea/libraries/Gradle__org_springframework_data_spring_data_commons_3_1_1.xml,6\d\6d35e5b5f9524baa35f28adc5b1a39fbdb587a9b
+`
+0Anti-Fraud System/Feedback/task-remote-info.yaml,1\c\1cc8fd20de26f252494d4442a95174a30c61cd3e
+Ö
+U.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_tomcat_3_1_1.xml,3\0\30c8ea82eae6a6561c364859590663bd3efd195a
+â
+Y.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_validation_3_1_1.xml,5\3\53ef31fd46aa89fb277f3493b766c57fdce9d468
+f
+6Anti-Fraud System/task/src/antifraud/util/RegionSet.kt,9\0\90f24afa11fb1c0ca07cb942344c2a2ec0a7cb6b
+t
+D.idea/libraries/Gradle__org_springframework_spring_webmvc_6_0_10.xml,a\d\ad183065886e40ba62f918c42aee4c070f599381
+p
+@.idea/libraries/Gradle__org_springframework_spring_tx_6_0_10.xml,0\e\0e5dd8a96aa4cfcef924b79039977097d739e8bc
+q
+A.idea/libraries/Gradle__org_springframework_spring_web_6_0_10.xml,1\f\1f6a83596d5bfb527a5e568ba641866eadb7eb94
+u
+EAnti-Fraud System/Simple transaction validation/task-remote-info.yaml,d\1\d18f3135237ccaa2019a7e329174fca409dfdd29
+r
+B.idea/libraries/Gradle__org_springframework_spring_jdbc_6_0_10.xml,e\2\e26d2f943ae5f3c3a4ac11e458ea62f5fc5eadfd
+n
+>Anti-Fraud System/Simple transaction validation/task-info.yaml,0\d\0da38fabb2c6e101ab018f0e32f8183d5e4529e9
+q
+A.idea/libraries/Gradle__org_springframework_spring_orm_6_0_10.xml,3\7\37b3fb412218da5eba28009f2b721efd6159c4d9
+?
+settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
+<
+build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
+@
+course-info.yaml,8\1\81db7fbbb03b3e3f063d803783ac0942e85a4031
+l
+<Anti-Fraud System/task/build/reports/tests/test/js/report.js,a\c\ac92621d05b5e141b74455437663ed201eaf9fcc
+r
+BAnti-Fraud System/task/build/reports/tests/test/css/base-style.css,e\1\e19ce9a8866c2643f2d01c1f5a73c67f6a634bad
+m
+=Anti-Fraud System/task/build/reports/tests/test/css/style.css,b\3\b3102ef1ea8e9a958a8aa90c2de54997befdca9c
+q
+AAnti-Fraud System/task/src/antifraud/util/UserRoleConstraint.java,f\0\f0cd361a93d64b8ed881d4f250956880add8b14e
+o
+?Anti-Fraud System/task/src/antifraud/util/RegionConstraint.java,c\b\cbbae48086176f03ab7dcd5f0c4433df634d6921

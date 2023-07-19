@@ -19,4 +19,5 @@ interface TransactionRepository : JpaRepository<Transaction, Long> {
         nativeQuery = true
     )
     fun countIps(number: String, transactionDate: Timestamp, hourAgo: Timestamp): Long
+    fun findAllByNumber(number: String):  MutableList<Transaction>
 }

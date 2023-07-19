@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional
 
 
 @Component
-open class SetupDataLoader(
+class SetupDataLoader(
     private val roleRepository: RoleRepository,
     private val privilegeRepository: PrivilegeRepository,
 ) : ApplicationListener<ContextRefreshedEvent> {
@@ -22,14 +22,20 @@ open class SetupDataLoader(
         if (alreadySetup) return
 
         //admin privileges
-        val adminPrivilege = createPrivilegeIfNotFound("ADMIN_PRIVILEGE")
         val accessAdminPrivilege = createPrivilegeIfNotFound("ACCESS_ADMIN_PRIVILEGE")
-        val editRolePrivilege = createPrivilegeIfNotFound("EDIT_ROLE_PRIVILEGE")
+        val editUserRolePrivilege = createPrivilegeIfNotFound("UPDATE_USER_ROLE_PRIVILEGE")
+        val editUserAccessPrivilege = createPrivilegeIfNotFound("UPDATE_USER_ACCESS_PRIVILEGE")
         val deleteUserPrivilege = createPrivilegeIfNotFound("DELETE_USER_PRIVILEGE")
         //support privileges
         val listUserPrivilege = createPrivilegeIfNotFound("LIST_USER_PRIVILEGE")
-        val stolenCardPrivilege = createPrivilegeIfNotFound("STOLEN_CARD_PRIVILEGE")
-        val suspiciousIpPrivilege = createPrivilegeIfNotFound("SUSPICIOUS_IP_PRIVILEGE")
+        val addStolenCardPrivilege = createPrivilegeIfNotFound("ADD_STOLEN_CARD_PRIVILEGE")
+        val deleteStolenCardPrivilege = createPrivilegeIfNotFound("DELETE_STOLEN_CARD_PRIVILEGE")
+        val listStolenCardPrivilege = createPrivilegeIfNotFound("LIST_STOLEN_CARD_PRIVILEGE")
+        val blockIpPrivilege = createPrivilegeIfNotFound("BLOCK_IP_PRIVILEGE")
+        val unblockIpPrivilege = createPrivilegeIfNotFound("UNBLOCK_IP_PRIVILEGE")
+        val listBlockedIpPrivilege = createPrivilegeIfNotFound("LIST_BLOCKED_IP_PRIVILEGE")
+        val listTransactionPrivilege = createPrivilegeIfNotFound("LIST_TRANSACTION_PRIVILEGE")
+        val updateTransactionPrivilege = createPrivilegeIfNotFound("UPDATE_TRANSACTION_PRIVILEGE")
         //transaction privileges
         val checkTransactionPrivilege = createPrivilegeIfNotFound("CHECK_TRANSACTION_PRIVILEGE")
 
@@ -39,16 +45,18 @@ open class SetupDataLoader(
         )
         val supportPrivilege = mutableSetOf(
             listUserPrivilege,
-            stolenCardPrivilege,
-            suspiciousIpPrivilege,
+            addStolenCardPrivilege,
+            deleteStolenCardPrivilege,
+            listStolenCardPrivilege,
+            blockIpPrivilege,
+            unblockIpPrivilege,
+            listBlockedIpPrivilege,
+            listTransactionPrivilege,
+            updateTransactionPrivilege
         )
 
         val adminPrivileges = mutableSetOf(
-            adminPrivilege,
-            deleteUserPrivilege,
-            accessAdminPrivilege,
-            editRolePrivilege,
-            listUserPrivilege
+            deleteUserPrivilege, accessAdminPrivilege, editUserRolePrivilege, editUserAccessPrivilege, listUserPrivilege
         )
 
         createRoleIfNotFound("ADMINISTRATOR", adminPrivileges)
@@ -59,14 +67,14 @@ open class SetupDataLoader(
     }
 
     @Transactional
-    open fun createPrivilegeIfNotFound(name: String?): Privilege {
+    fun createPrivilegeIfNotFound(name: String?): Privilege {
         return privilegeRepository.save(
             privilegeRepository.findByName(name).orElse(Privilege(name = name))
         )
     }
 
     @Transactional
-    open fun createRoleIfNotFound(name: String?, privileges: MutableSet<Privilege>?): Role {
+    fun createRoleIfNotFound(name: String?, privileges: MutableSet<Privilege>?): Role {
         return roleRepository.save(
             roleRepository.findByName(name).orElse(Role(name = name, privileges = privileges))
         )

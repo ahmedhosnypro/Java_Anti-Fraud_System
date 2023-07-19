@@ -1,10 +1,11 @@
 package antifraud.model
 
 import antifraud.util.RegionSet
-import antifraud.util.TransactionValidationState
-import antifraud.util.TransactionValidationState.*
+import antifraud.util.TransactionState
+import antifraud.util.TransactionState.*
 import jakarta.persistence.*
 import java.sql.Timestamp
+import kotlin.math.ceil
 
 @Entity(name = "Transactions")
 class Transaction(
@@ -15,14 +16,16 @@ class Transaction(
 
     @Enumerated(EnumType.STRING) @Column(nullable = false) var region: RegionSet? = null,
     @Temporal(TemporalType.TIMESTAMP) @Column(nullable = false) var date: Timestamp? = null,
+    @Enumerated(EnumType.STRING) @Column(nullable = true) var result: TransactionState? = null,
+    @Enumerated(EnumType.STRING) @Column(nullable = true) var feedback: TransactionState? = null,
 
     ) {
     companion object {
-        fun validateAmount(amount: Int?): TransactionValidationState {
+        fun validateAmount(transaction: Transaction, card: Card): TransactionState {
             return when {
-                amount!! < 1 -> INVALID
-                amount in 1..200 -> ALLOWED
-                amount in 201..1500 -> MANUAL_PROCESSING
+                transaction.amount!! < 1 -> INVALID
+                transaction.amount in 1..card.maxAllowed -> ALLOWED
+                transaction.amount in card.maxAllowed ..card.maxManualProcessing -> MANUAL_PROCESSING
                 else -> PROHIBITED
             }
         }

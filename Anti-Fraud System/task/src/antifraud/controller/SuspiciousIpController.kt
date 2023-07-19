@@ -6,15 +6,20 @@ import antifraud.util.IpAddressUtil
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Pattern
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @Validated
+@EnableMethodSecurity
+@RequestMapping("/api/antifraud")
 class SuspiciousIpController(
     private val ipService: IpService
 ) {
-    @PostMapping("/api/antifraud/suspicious-ip")
+    @PostMapping("/suspicious-ip")
+    @PreAuthorize("hasAuthority('BLOCK_IP_PRIVILEGE')")
     fun blockIp(@RequestBody @Valid ipDTO: IpDTO): ResponseEntity<Any> {
         if (ipDTO.ip?.let { ipService.existsByIp(it) } == true) {
             return ResponseEntity.status(409).body("ip already exists")
@@ -27,7 +32,8 @@ class SuspiciousIpController(
         )
     }
 
-    @DeleteMapping("/api/antifraud/suspicious-ip/{ip}")
+    @DeleteMapping("/suspicious-ip/{ip}")
+    @PreAuthorize("hasAuthority('UNBLOCK_IP_PRIVILEGE')")
     fun unblockIp(
         @PathVariable @Pattern(regexp = IpAddressUtil.IPV4_REGEX)  ip: String
     ): ResponseEntity<Any> {
@@ -38,7 +44,8 @@ class SuspiciousIpController(
         }
     }
 
-    @GetMapping("/api/antifraud/suspicious-ip")
+    @GetMapping("/suspicious-ip")
+    @PreAuthorize("hasAuthority('LIST_BLOCKED_IP_PRIVILEGE')")
     fun listBlockedIpAddresses(): ResponseEntity<Any> =
         ResponseEntity.ok(ipService.findAll().sortedBy { it.id }.map { IpDTO.fromEntity(it) })
 }
